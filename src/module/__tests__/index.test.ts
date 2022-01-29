@@ -1,4 +1,4 @@
-import { a } from '../src/module/index';
+import { a } from '../index';
 
 describe('a()のテスト', () => {
   it('test と出力', () => {
