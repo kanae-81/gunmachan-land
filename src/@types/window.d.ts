@@ -1,4 +1,4 @@
 interface Window {
   Gchan: any;
 }
-declare var window: Window;
+declare let window: Window;
