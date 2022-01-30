@@ -1,16 +1,12 @@
-import { a } from './module';
+// import { a } from './module';
 
-(function (global, factory) {
-  factory(global);
-  a();
-})(window, function (window: Window) {
+const Gchan = () => {
   const version = '1.0.0';
-  const Gchan = () => {
-    return {
-      version,
-    };
+  console.log('test');
+  return {
+    version,
+    // test: a,
   };
+};
 
-  window.Gchan = Gchan;
-  return Gchan;
-});
+export default Gchan;

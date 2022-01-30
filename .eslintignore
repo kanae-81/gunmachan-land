@@ -2,3 +2,4 @@ node_modules/
 coverage/
 dist/
 gulpfile.js
+webpack.config.js
