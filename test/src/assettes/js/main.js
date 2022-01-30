@@ -1,2 +1,4 @@
 import Gchan from '/dist/index';
-console.log(Gchan);
+const version = Gchan.version;
+Gchan.test();
+console.log(version);

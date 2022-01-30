@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "npx gulp build",
-    "start": "npx gulp",
+    "dev": "npx gulp dev",
     "test": "jest",
     "test:watch": "npx http-server -o coverage/lcov-report",
     "lint": "run-s lint:*",
