@@ -2,8 +2,10 @@ const gulp = require('gulp');
 const typescript = require('gulp-typescript');
 const tsProject = typescript.createProject('tsconfig.json');
 const del = require('del');
+const ejs = require('gulp-ejs');
 const sass = require('gulp-sass')(require('sass'));
-
+const plumber = require('gulp-plumber');
+const rename = require('gulp-rename');
 const webpackStream = require('webpack-stream');
 const webpack = require('webpack');
 const webpackConfig = require('./webpack.config');
@@ -29,23 +31,28 @@ gulp.task('watch:ts', () => {
   });
 });
 
+const ejsPath = './test/src/**/*.ejs';
+gulp.task('test:ejs', function () {
+  return gulp
+    .src([ejsPath, '!./test/src/**/_*.ejs'])
+    .pipe(plumber())
+    .pipe(ejs())
+    .pipe(rename({ extname: '.html' }))
+    .pipe(gulp.dest('test/dist/'));
+});
+gulp.task('watch:ejs', () => {
+  return gulp.watch(ejsPath, gulp.task('test:ejs'));
+});
+
 const scssPath = './test/src/assettes/scss/**/*.scss';
 gulp.task('test:sass', function () {
   return gulp
-    .src(scssPath)
+    .src([scssPath, '!./test/src/assettes/scss/**/_*.scss'])
     .pipe(sass({ outputStyle: 'expanded' }))
     .pipe(gulp.dest('./test/dist/assettes/css'));
 });
 gulp.task('watch:sass', () => {
   return gulp.watch(scssPath, gulp.task('test:sass'));
-});
-
-const htmlPath = 'test/src/*.html';
-gulp.task('test:html', function () {
-  return gulp.src([htmlPath]).pipe(gulp.dest('test/dist/'));
-});
-gulp.task('watch:html', () => {
-  return gulp.watch(htmlPath, gulp.task('test:html'));
 });
 
 const imagePath = './test/src/assettes/images/*.+(jpg|jpeg|png|gif|svg)';
@@ -82,14 +89,14 @@ gulp.task('build', gulp.series('clean', 'test:ts'));
 
 gulp.task(
   'test',
-  gulp.series('test:ts', 'test:sass', 'test:html', 'test:js', 'test:image')
+  gulp.series('test:ts', 'test:sass', 'test:ejs', 'test:js', 'test:image')
 );
 gulp.task(
   'watch',
   gulp.parallel(
     'watch:ts',
     'watch:sass',
-    'watch:html',
+    'watch:ejs',
     'watch:js',
     'watch:image'
   )
