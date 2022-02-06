@@ -133,6 +133,7 @@ class FerrisWheel implements FerrisWheel {
     this.imagesClassName = imagesClassName;
     return this;
   };
+  // TODO: resizeイベント仕込む
 }
 
 export default FerrisWheel;
