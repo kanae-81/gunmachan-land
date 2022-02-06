@@ -1,3 +1,7 @@
 @use './foundation/reset';
 @use './module/header';
 @use './module/section';
+
+body {
+  height: 100vh;
+}
