@@ -1,5 +1,4 @@
-import Gchan from '/dist/index';
-const version = Gchan.version;
-Gchan.test();
-console.log(version);
-console.log('aaafdfdsf');
+import GchanLand from '/dist/index';
+
+const gchan = new GchanLand();
+gchan.ferrisWheel();
