@@ -1,15 +1,15 @@
-import ferrisWheel from './module/ferrisWheel';
+import FerrisWheel from './module/ferrisWheel';
 import { gunmachanImages } from './module/utils/images';
 
 interface GchanLand {
   root: HTMLElement;
   imgArray: string[];
   version: string;
-  ferrisWheel: (
+  ferrisWheel(
     duration: number,
     displaySize: string,
     marginRatio: number
-  ) => ferrisWheel;
+  ): FerrisWheel;
 }
 
 const version = '1.0.0';
@@ -28,20 +28,16 @@ class GchanLand implements GchanLand {
    * @param {number} marginRatio ゴンドラ間のマージン ( 1つのゴンドラの大きさに対する相対値 )
    * @returns
    */
-  ferrisWheel = (
-    duration: number,
-    displaySize: string,
-    marginRatio: number
-  ) => {
+  ferrisWheel(duration: number, displaySize: string, marginRatio: number) {
     const { root, imgArray } = this;
-    return new ferrisWheel({
+    return new FerrisWheel({
       root,
       imgArray,
       duration,
       marginRatio,
       displaySize,
     }).init();
-  };
+  }
 }
 
 export default GchanLand;

@@ -1,6 +1,5 @@
 import { shuffleImage, createImg } from './utils/images';
 import { addStyleRule } from './utils/utils';
-
 interface FerrisWheel {
   root: HTMLElement;
   imgArray: string[];
@@ -9,6 +8,12 @@ interface FerrisWheel {
   displaySize: string;
   imagesClassName?: string;
   animationDelay?: number;
+  test: string;
+  init(): FerrisWheel;
+  resize(): void;
+  pause(): void;
+  restart(): void;
+  destroy(delay?: number): void;
 }
 
 interface initProps {
@@ -88,6 +93,8 @@ const init = ({
   const imgBaseStyle = `
     .${imgClass} {
       position: absolute;
+      top: 0px;
+      left: 0px;
       object-fit: cover;
       border-radius: 50%;
       box-shadow: 0 0 3px #000;
@@ -106,10 +113,24 @@ const init = ({
   const waitLength = size * (1 + marginRatio);
   const count = Math.floor(trackLength / waitLength);
   const ratio = (duration * waitLength) / trackLength;
-  const images = shuffleImage(imgArray);
-
+  const getDisplayImageAry = () => {
+    const images = shuffleImage(imgArray);
+    if (count <= images.length) {
+      return images;
+    }
+    let newArray = [...images];
+    const roopCount = Math.ceil(count / images.length);
+    for (let index = 0; index < roopCount; index++) {
+      newArray = [...newArray, ...images];
+    }
+    return newArray;
+  };
+  const displayImages = getDisplayImageAry();
   for (let index = 0; index < count; index++) {
-    const imgElm = createImg(images[index], { width: size, height: size });
+    const imgElm = createImg(displayImages[index], {
+      width: size,
+      height: size,
+    });
     imgElm.classList.add(imgClass);
     imgElm.style.animationDelay = `${ratio * index}s`;
     (Object.keys(optionalStyle) as [keyof OptionalStyle]).forEach((key) => {
@@ -128,7 +149,7 @@ const init = ({
 /**
  * ぐんまちゃん観覧車
  */
-class FerrisWheel implements FerrisWheel {
+class FerrisWheel {
   /**
    * @constructor
    */
@@ -145,7 +166,11 @@ class FerrisWheel implements FerrisWheel {
     this.marginRatio = marginRatio;
     this.displaySize = displaySize;
   }
-  init = () => {
+  /**
+   * 観覧車の作成
+   * @returns {}
+   */
+  init() {
     const { root, imgArray, duration, marginRatio, displaySize } = this;
     const { imagesClassName, animationDelay } = init({
       root,
@@ -157,13 +182,13 @@ class FerrisWheel implements FerrisWheel {
     this.imagesClassName = imagesClassName;
     this.animationDelay = animationDelay;
     return this;
-  };
+  }
 
   /**
    * 観覧車のリサイズ
    * @returns {void}
    */
-  resize = () => {
+  resize() {
     const { root, imagesClassName, displaySize, marginRatio } = this;
     if (!imagesClassName) return;
 
@@ -180,14 +205,42 @@ class FerrisWheel implements FerrisWheel {
         image.style[key] = optionalStyle[key];
       });
     });
-  };
+  }
+
+  /**
+   * 観覧車の一時停止
+   * @returns {void}
+   */
+  pause() {
+    const { imagesClassName } = this;
+    const imageElms = document.querySelectorAll<HTMLImageElement>(
+      `.${imagesClassName}`
+    );
+    imageElms.forEach((image) => {
+      image.style.animationPlayState = 'paused';
+    });
+  }
+
+  /**
+   * 観覧車の再生
+   * @returns {void}
+   */
+  restart() {
+    const { imagesClassName } = this;
+    const imageElms = document.querySelectorAll<HTMLImageElement>(
+      `.${imagesClassName}`
+    );
+    imageElms.forEach((image) => {
+      image.style.animationPlayState = 'running';
+    });
+  }
 
   /**
    * 観覧車の破棄
    * @param {number} delay 画像削除の間隔(秒数指定)
    * @returns {void}
    */
-  destroy = (delay?: number) => {
+  destroy(delay?: number) {
     const { imagesClassName } = this;
     const images = document.querySelectorAll(`.${imagesClassName}`);
     const delayMs = delay ? delay * 1000 : 0;
@@ -196,7 +249,7 @@ class FerrisWheel implements FerrisWheel {
         image.remove();
       }, delayMs * index);
     });
-  };
+  }
 }
 
 export default FerrisWheel;
