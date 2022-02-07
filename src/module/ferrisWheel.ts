@@ -1,6 +1,16 @@
 import { shuffleImage, createImg } from './utils/images';
 import { addStyleRule } from './utils/utils';
 
+interface FerrisWheel {
+  root: HTMLElement;
+  imgArray: string[];
+  duration: number;
+  marginRatio: number;
+  displaySize: string;
+  imagesClassName?: string;
+  animationDelay?: number;
+}
+
 interface initProps {
   root: HTMLElement;
   imgArray: string[];
@@ -8,6 +18,50 @@ interface initProps {
   displaySize: string;
   marginRatio: number;
 }
+
+interface OptionalStyle {
+  width: string;
+  height: string;
+  offsetPath: string;
+  margin: string;
+}
+
+/**
+ *
+ * 画像サイズ設定のためのプロパティ作成
+ * @param {HTMLElement} root 挿入先の要素
+ * @param {string} displaySize
+ * @param {marginRatio} marginRatio
+ * @returns {Object}
+ */
+const createOptionalProps = (
+  root: HTMLElement,
+  displaySize: string,
+  marginRatio: number
+) => {
+  const containerWidth = root.offsetWidth;
+  const containerHeight = root.offsetHeight;
+  const size = displaySize.includes('px')
+    ? Number(displaySize.replace('px', ''))
+    : containerWidth * (Number(displaySize.replace('%', '')) / 100);
+  const margin = size * marginRatio;
+  const pathWidth = containerWidth - margin * 2;
+  const pathHeight = containerHeight - margin * 2;
+  return {
+    containerHeight,
+    containerWidth,
+    size,
+    pathWidth,
+    pathHeight,
+    margin,
+    optionalStyle: {
+      width: `${size}px`,
+      height: `${size}px`,
+      offsetPath: `path('m 0 0 l ${pathWidth} 0 l 0 ${pathHeight} l -${pathWidth} 0 l 0 -${pathHeight} z')`,
+      margin: `${margin}px`,
+    },
+  };
+};
 
 /**
  * 観覧車の要素を作成し挿入
@@ -23,50 +77,29 @@ const init = ({
   displaySize,
 }: initProps) => {
   const fragment = document.createDocumentFragment();
-
-  const container = document.createElement('div');
-  const className = `ferrisWheel-${Date.now()}`;
-  const contaienrStyle = `
-    .${className} {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      z-index: 9999999;
-    }
-  `;
-  container.classList.add(className);
-  addStyleRule(contaienrStyle);
-
-  const containerWidth = root.offsetWidth;
-  const containerHeight = root.offsetHeight;
-  const size = displaySize.includes('px')
-    ? Number(displaySize.replace('px', ''))
-    : containerWidth * (Number(displaySize.replace('%', '')) / 100);
-  const margin = size * marginRatio;
   const imgClass = `ferrisWheel__img-${Date.now()}`;
+
   const keyframe = `@keyframes move{
       to {
         offset-distance: 100%;
       }
     }`;
   addStyleRule(keyframe);
-  const pathWidth = containerWidth - margin * 2;
-  const pathHeight = containerHeight - margin * 2;
-  const imgStyle = `
+  const imgBaseStyle = `
     .${imgClass} {
       position: absolute;
-      width: ${size}px;
-      height: ${size}px;
       object-fit: cover;
       border-radius: 50%;
       box-shadow: 0 0 3px #000;
+      z-index: 9999999;
       offset-rotate: 0deg;
-      offset-path: path('m 0 0 l ${pathWidth} 0 l 0 ${pathHeight} l -${pathWidth} 0 l 0 -${pathHeight} z');
       animation: move ${duration}s infinite linear;
-      margin: ${margin}px;
     }
   `;
-  addStyleRule(imgStyle);
+  addStyleRule(imgBaseStyle);
+
+  const { containerHeight, containerWidth, size, optionalStyle } =
+    createOptionalProps(root, displaySize, marginRatio);
 
   const trackLength =
     (containerHeight + containerWidth) * 2 - size * marginRatio * 8;
@@ -79,26 +112,18 @@ const init = ({
     const imgElm = createImg(images[index], { width: size, height: size });
     imgElm.classList.add(imgClass);
     imgElm.style.animationDelay = `${ratio * index}s`;
+    (Object.keys(optionalStyle) as [keyof OptionalStyle]).forEach((key) => {
+      imgElm.style[key] = optionalStyle[key];
+    });
     fragment.appendChild(imgElm);
   }
 
-  container.appendChild(fragment);
-  root.insertAdjacentElement('afterbegin', container);
+  root.appendChild(fragment);
   return {
-    containerClassName: className,
     imagesClassName: imgClass,
+    animationDelay: ratio,
   };
 };
-
-interface FerrisWheel {
-  root: HTMLElement;
-  imgArray: string[];
-  duration: number;
-  marginRatio: number;
-  displaySize: string;
-  containerClassName?: string;
-  imagesClassName?: string;
-}
 
 /**
  * ぐんまちゃん観覧車
@@ -122,47 +147,54 @@ class FerrisWheel implements FerrisWheel {
   }
   init = () => {
     const { root, imgArray, duration, marginRatio, displaySize } = this;
-    const { containerClassName, imagesClassName } = init({
+    const { imagesClassName, animationDelay } = init({
       root,
       imgArray,
       duration,
       marginRatio,
       displaySize,
     });
-    this.containerClassName = containerClassName;
     this.imagesClassName = imagesClassName;
+    this.animationDelay = animationDelay;
     return this;
   };
+
+  /**
+   * 観覧車のリサイズ
+   * @returns {void}
+   */
   resize = () => {
-    // TODO: リファクタ
     const { root, imagesClassName, displaySize, marginRatio } = this;
     if (!imagesClassName) return;
-    const containerWidth = root.offsetWidth;
-    const containerHeight = root.offsetHeight;
-    const size = displaySize.includes('px')
-      ? Number(displaySize.replace('px', ''))
-      : containerWidth * (Number(displaySize.replace('%', '')) / 100);
-    const margin = size * marginRatio;
-    const pathWidth = containerWidth - margin * 2;
-    const pathHeight = containerHeight - margin * 2;
-    const offsetPath = `path('m 0 0 l ${pathWidth} 0 l 0 ${pathHeight} l -${pathWidth} 0 l 0 -${pathHeight} z')`;
+
+    const { optionalStyle } = createOptionalProps(
+      root,
+      displaySize,
+      marginRatio
+    );
     const images = document.querySelectorAll<HTMLImageElement>(
       `.${imagesClassName}`
     );
-
     images.forEach((image) => {
-      image.style.offsetPath = offsetPath;
-      image.style.width = `${size}px`;
-      image.style.height = `${size}px`;
-      image.style.margin = `${margin}px`;
+      (Object.keys(optionalStyle) as [keyof OptionalStyle]).forEach((key) => {
+        image.style[key] = optionalStyle[key];
+      });
     });
   };
-  destroy = () => {
-    // TODO: 徐々に消えるオプション
+
+  /**
+   * 観覧車の破棄
+   * @param {number} delay 画像削除の間隔(秒数指定)
+   * @returns {void}
+   */
+  destroy = (delay?: number) => {
     const { imagesClassName } = this;
     const images = document.querySelectorAll(`.${imagesClassName}`);
-    images.forEach((image) => {
-      image.remove();
+    const delayMs = delay ? delay * 1000 : 0;
+    images.forEach((image, index) => {
+      setTimeout(() => {
+        image.remove();
+      }, delayMs * index);
     });
   };
 }
