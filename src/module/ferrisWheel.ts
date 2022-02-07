@@ -133,7 +133,38 @@ class FerrisWheel implements FerrisWheel {
     this.imagesClassName = imagesClassName;
     return this;
   };
-  // TODO: resizeイベント仕込む
+  resize = () => {
+    // TODO: リファクタ
+    const { root, imagesClassName, displaySize, marginRatio } = this;
+    if (!imagesClassName) return;
+    const containerWidth = root.offsetWidth;
+    const containerHeight = root.offsetHeight;
+    const size = displaySize.includes('px')
+      ? Number(displaySize.replace('px', ''))
+      : containerWidth * (Number(displaySize.replace('%', '')) / 100);
+    const margin = size * marginRatio;
+    const pathWidth = containerWidth - margin * 2;
+    const pathHeight = containerHeight - margin * 2;
+    const offsetPath = `path('m 0 0 l ${pathWidth} 0 l 0 ${pathHeight} l -${pathWidth} 0 l 0 -${pathHeight} z')`;
+    const images = document.querySelectorAll<HTMLImageElement>(
+      `.${imagesClassName}`
+    );
+
+    images.forEach((image) => {
+      image.style.offsetPath = offsetPath;
+      image.style.width = `${size}px`;
+      image.style.height = `${size}px`;
+      image.style.margin = `${margin}px`;
+    });
+  };
+  destroy = () => {
+    // TODO: 徐々に消えるオプション
+    const { imagesClassName } = this;
+    const images = document.querySelectorAll(`.${imagesClassName}`);
+    images.forEach((image) => {
+      image.remove();
+    });
+  };
 }
 
 export default FerrisWheel;
