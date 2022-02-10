@@ -1,3 +1,10 @@
+<%_ const sectionList = [{type: 'ferrisWheel', name: 'かんらんしゃ'}] _%>
+
+<%_ sectionList.forEach((section) => { _%>
 <section class="section">
-  <h2 class="section__title">セクションタイトル</h2>
+  <h2 class="section__title"><%- section.name %></h2>
+  <div class="section__content container" data-<%- section.type %>>
+    <%- include(`./_${section.type}.ejs`) %>
+  </div>
 </section>
+<%_  }); _%>
