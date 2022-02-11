@@ -10,13 +10,35 @@ interface MerryGoRound {
   displaySize: string;
   imagesClassName?: string;
   animationDelay?: number;
-  test: string;
   init(): MerryGoRound;
   resize(): void;
   pause(): void;
   restart(): void;
   destroy(delay?: number): void;
 }
+
+/**
+ * 画像に追加するスタイルを作成
+ * @param {number} size 画像サイズ
+ * @param {number} containerWidth ルート要素の幅
+ * @param {number} containerHeight ルート要素の高さ
+ * @returns {OptionalStyle} 追加するスタイル
+ */
+const createOptionalStyles = (
+  size: number,
+  containerWidth: number,
+  containerHeight: number
+): OptionalStyle => {
+  const pathWidth = containerWidth + size;
+  const pathHeight = containerHeight - size / 2;
+  return {
+    width: `${size}px`,
+    height: `${size}px`,
+    offsetPath: `path('m ${pathWidth} ${pathHeight} l -${
+      pathWidth + size
+    } 0  Z')`,
+  };
+};
 
 /**
  *
@@ -37,43 +59,23 @@ const createOptionalProps = (
     ? Number(displaySize.replace('px', ''))
     : containerWidth * (Number(displaySize.replace('%', '')) / 100);
   const margin = size * marginRatio;
-  const pathWidth = containerWidth - size / 2;
-  const pathHeight = containerHeight - margin * 2;
+  const optionalStyle = createOptionalStyles(
+    size,
+    containerWidth,
+    containerHeight
+  );
   return {
     containerHeight,
     containerWidth,
     size,
-    pathWidth,
-    pathHeight,
     margin,
-    optionalStyle: {
-      width: `${size}px`,
-      height: `${size}px`,
-      offsetPath: `path('M ${pathWidth} ${pathHeight} l -${
-        containerWidth - size
-      } 0  Z')`,
-    },
+    optionalStyle: optionalStyle,
   };
 };
 
-/**
- * メリーゴーランドの要素を作成し挿入
- * @param {HTMLElement} root 挿入先の要素
- * @param {string[]} imgArray 画像URLリスト
- * @returns {void}
- */
-const init = ({
-  root,
-  imgArray,
-  duration,
-  marginRatio,
-  displaySize,
-}: initProps) => {
-  const fragment = document.createDocumentFragment();
-  const imgClass = `MerryGoRound__img-${Date.now()}`;
+const addBaseStyle = (imgClass: string, size: number, duration: number) => {
   const upper = 9999;
   const lower = 8888;
-
   const keyframe = `
     @keyframes move{
       0% {
@@ -81,23 +83,25 @@ const init = ({
         top: -3%;
         z-index: ${upper};
       }
-      20%,45% {
+      10%,30%, 90% {
         top: 0%;
       }
-      35%,55%,75% {
+      40%,55%,70% {
         top: -3%;
       }
-      60%,90% {
+      20%,80% {
         top: -6%;
       }
+      60% {
+        top: -8%;
+      }
       100% {
-        top: -3%;
+        top: -2%;
         offset-distance: 100%;
         z-index: ${lower};
       }
     }
   `;
-  addStyleRule(keyframe);
   const imgBaseStyle = `
     .${imgClass} {
       position: absolute;
@@ -110,13 +114,32 @@ const init = ({
       animation: move ${duration}s infinite linear;
     }
   `;
-  addStyleRule(imgBaseStyle);
 
-  const { containerWidth, size, optionalStyle } = createOptionalProps(
-    root,
-    displaySize,
-    marginRatio
-  );
+  addStyleRule(keyframe);
+  addStyleRule(imgBaseStyle);
+};
+
+/**
+ * DOMに挿入する画像群を作成
+ * @param {string} imgClass 画像に付与するクラス
+ * @param {number} containerWidth ルート要素の幅
+ * @param {number} size 画像のサイズ
+ * @param {number} marginRatio 画像と画像の間隔
+ * @param {string[]} imgArray 画像パスを格納した配列
+ * @param {number} duration 1周する時間
+ * @param {OptionalStyle} optionalStyle 画像に追加するスタイル
+ * @returns {imgElms: DocumentFragment; ratio: number;}
+ */
+const createImgElms = (
+  imgClass: string,
+  containerWidth: number,
+  size: number,
+  marginRatio: number,
+  imgArray: string[],
+  duration: number,
+  optionalStyle: OptionalStyle
+) => {
+  const fragment = document.createDocumentFragment();
 
   const trackLength = (containerWidth - size) * 2;
   const waitLength = size * marginRatio;
@@ -136,8 +159,44 @@ const init = ({
     });
     fragment.appendChild(imgElm);
   }
+  return {
+    imgElms: fragment,
+    ratio: ratio,
+  };
+};
 
-  root.appendChild(fragment);
+/**
+ * メリーゴーランドの要素を作成し挿入
+ * @param {initProps}
+ * @returns {imagesClassName: string; animationDelay: number;}
+ */
+const init = ({
+  root,
+  imgArray,
+  duration,
+  marginRatio,
+  displaySize,
+}: initProps) => {
+  const imgClass = `MerryGoRound__img-${Date.now()}`;
+
+  const { containerWidth, size, optionalStyle } = createOptionalProps(
+    root,
+    displaySize,
+    marginRatio
+  );
+
+  const { imgElms, ratio } = createImgElms(
+    imgClass,
+    containerWidth,
+    size,
+    marginRatio,
+    imgArray,
+    duration,
+    optionalStyle
+  );
+
+  addBaseStyle(imgClass, size, duration);
+  root.appendChild(imgElms);
   return {
     imagesClassName: imgClass,
     animationDelay: ratio,
@@ -166,7 +225,7 @@ class MerryGoRound {
   }
   /**
    * メリーゴーランドの作成
-   * @returns {}
+   * @returns {MerryGoRound}
    */
   init() {
     const { root, imgArray, duration, marginRatio, displaySize, resize } = this;

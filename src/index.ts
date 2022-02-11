@@ -25,7 +25,6 @@ const version = '1.0.0';
 class GchanLand implements GchanLand {
   constructor(root?: HTMLElement, imgArray?: string[]) {
     this.root = root || document.body;
-    this.root.style.position = 'relative';
     this.imgArray = imgArray || gunmachanImages;
   }
   static version = version;
@@ -44,7 +43,7 @@ class GchanLand implements GchanLand {
   }
   /**
    * アニメーション再生
-   * @returns {void}
+   * @roptionalStyleeturns {void}
    */
   restart(imagesClassName: string) {
     const imageElms = document.querySelectorAll<HTMLImageElement>(
@@ -79,6 +78,8 @@ class GchanLand implements GchanLand {
    */
   ferrisWheel(duration: number, displaySize: string, marginRatio: number) {
     const { root, imgArray, pause, restart, destroy } = this;
+    root.style.position = 'relative';
+
     const ferrisWheelObject = new FerrisWheel({
       root,
       imgArray,
@@ -104,6 +105,9 @@ class GchanLand implements GchanLand {
    */
   merryGoRound(duration: number, displaySize: string, marginRatio: number) {
     const { root, imgArray, pause, restart, destroy } = this;
+    root.style.position = 'relative';
+    root.style.overflow = 'hidden';
+
     const merryGoRoundObject = new MerryGoRound({
       root,
       imgArray,
