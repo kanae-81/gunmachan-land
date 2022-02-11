@@ -3,11 +3,11 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './test/src/assettes/js/main.js',
+  entry: './demo/src/assettes/js/main.js',
   output: {
     // バンドル先
     filename: 'main.js',
-    path: path.join(__dirname, 'test/dist/assettes/js'),
+    path: path.join(__dirname, 'demo/dist/assettes/js'),
   },
   optimization: {
     minimizer: [
