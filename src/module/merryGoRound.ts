@@ -1,5 +1,7 @@
-import { shuffleImage, createImg } from './utils/images';
+import { increaseImageAry, createImgElm } from './utils/images';
 import { addStyleRule } from './utils/utils';
+import { initProps, OptionalStyle } from '../@types/atraction';
+
 interface MerryGoRound {
   root: HTMLElement;
   imgArray: string[];
@@ -14,20 +16,6 @@ interface MerryGoRound {
   pause(): void;
   restart(): void;
   destroy(delay?: number): void;
-}
-
-interface initProps {
-  root: HTMLElement;
-  imgArray: string[];
-  duration: number;
-  displaySize: string;
-  marginRatio: number;
-}
-
-interface OptionalStyle {
-  width: string;
-  height: string;
-  offsetPath: string;
 }
 
 /**
@@ -134,21 +122,10 @@ const init = ({
   const waitLength = size * marginRatio;
   const count = Math.floor(trackLength / (waitLength + size));
   const ratio = (duration * (waitLength + size)) / trackLength;
-  const getDisplayImageAry = () => {
-    const images = shuffleImage(imgArray);
-    if (count <= images.length) {
-      return images;
-    }
-    let newArray = [...images];
-    const roopCount = Math.ceil(count / images.length);
-    for (let index = 0; index < roopCount; index++) {
-      newArray = [...newArray, ...images];
-    }
-    return newArray;
-  };
-  const displayImages = getDisplayImageAry();
+
+  const displayImages = increaseImageAry(imgArray, count);
   for (let index = 0; index < count; index++) {
-    const imgElm = createImg(displayImages[index], {
+    const imgElm = createImgElm(displayImages[index], {
       width: size,
       height: size,
     });
@@ -192,7 +169,7 @@ class MerryGoRound {
    * @returns {}
    */
   init() {
-    const { root, imgArray, duration, marginRatio, displaySize } = this;
+    const { root, imgArray, duration, marginRatio, displaySize, resize } = this;
     const { imagesClassName, animationDelay } = init({
       root,
       imgArray,
@@ -202,6 +179,7 @@ class MerryGoRound {
     });
     this.imagesClassName = imagesClassName;
     this.animationDelay = animationDelay;
+    this.resize = resize;
     return this;
   }
 
@@ -225,50 +203,6 @@ class MerryGoRound {
       (Object.keys(optionalStyle) as [keyof OptionalStyle]).forEach((key) => {
         image.style[key] = optionalStyle[key];
       });
-    });
-  }
-
-  /**
-   * メリーゴーランドの一時停止
-   * @returns {void}
-   */
-  pause() {
-    const { imagesClassName } = this;
-    const imageElms = document.querySelectorAll<HTMLImageElement>(
-      `.${imagesClassName}`
-    );
-    imageElms.forEach((image) => {
-      image.style.animationPlayState = 'paused';
-    });
-  }
-
-  /**
-   * メリーゴーランドの再生
-   * @returns {void}
-   */
-  restart() {
-    const { imagesClassName } = this;
-    const imageElms = document.querySelectorAll<HTMLImageElement>(
-      `.${imagesClassName}`
-    );
-    imageElms.forEach((image) => {
-      image.style.animationPlayState = 'running';
-    });
-  }
-
-  /**
-   * メリーゴーランドの破棄
-   * @param {number} delay 画像削除の間隔(秒数指定)
-   * @returns {void}
-   */
-  destroy(delay?: number) {
-    const { imagesClassName } = this;
-    const images = document.querySelectorAll(`.${imagesClassName}`);
-    const delayMs = delay ? delay * 1000 : 0;
-    images.forEach((image, index) => {
-      setTimeout(() => {
-        image.remove();
-      }, delayMs * index);
     });
   }
 }
