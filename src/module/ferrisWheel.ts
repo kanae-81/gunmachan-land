@@ -18,6 +18,29 @@ interface FerrisWheel {
 }
 
 /**
+ * 画像に追加するスタイルを作成
+ * @param {number} size 画像サイズ
+ * @param {number} containerWidth ルート要素の幅
+ * @param {number} containerHeight ルート要素の高さ
+ * @returns {OptionalStyle} 追加するスタイル
+ */
+const createOptionalStyles = (
+  size: number,
+  containerWidth: number,
+  containerHeight: number,
+  margin: number
+): OptionalStyle => {
+  const pathWidth = containerWidth - margin * 2;
+  const pathHeight = containerHeight - margin * 2;
+  return {
+    width: `${size}px`,
+    height: `${size}px`,
+    offsetPath: `path('m 0 0 l ${pathWidth} 0 l 0 ${pathHeight} l -${pathWidth} 0 l 0 -${pathHeight} z')`,
+    margin: `${margin}px`,
+  };
+};
+
+/**
  *
  * 画像サイズ設定のためのプロパティ作成
  * @param {HTMLElement} root 挿入先の要素
@@ -36,46 +59,33 @@ const createOptionalProps = (
     ? Number(displaySize.replace('px', ''))
     : containerWidth * (Number(displaySize.replace('%', '')) / 100);
   const margin = size * marginRatio;
-  const pathWidth = containerWidth - margin * 2;
-  const pathHeight = containerHeight - margin * 2;
+  const optionalStyle = createOptionalStyles(
+    size,
+    containerWidth,
+    containerHeight,
+    margin
+  );
   return {
     containerHeight,
     containerWidth,
     size,
-    pathWidth,
-    pathHeight,
     margin,
-    optionalStyle: {
-      width: `${size}px`,
-      height: `${size}px`,
-      offsetPath: `path('m 0 0 l ${pathWidth} 0 l 0 ${pathHeight} l -${pathWidth} 0 l 0 -${pathHeight} z')`,
-      margin: `${margin}px`,
-    },
+    optionalStyle,
   };
 };
 
 /**
- * 観覧車の要素を作成し挿入
- * @param {HTMLElement} root 挿入先の要素
- * @param {string[]} imgArray 画像URLリスト
+ * 画像の基本スタイルをスタイルシートに挿入
+ * @param {string} imgClass
+ * @param {number} duration
  * @returns {void}
  */
-const init = ({
-  root,
-  imgArray,
-  duration,
-  marginRatio,
-  displaySize,
-}: initProps) => {
-  const fragment = document.createDocumentFragment();
-  const imgClass = `ferrisWheel__img-${Date.now()}`;
-
+const addBaseStyle = (imgClass: string, duration: number): void => {
   const keyframe = `@keyframes move{
       to {
         offset-distance: 100%;
       }
     }`;
-  addStyleRule(keyframe);
   const imgBaseStyle = `
     .${imgClass} {
       position: absolute;
@@ -89,10 +99,33 @@ const init = ({
       animation: move ${duration}s infinite linear;
     }
   `;
+  addStyleRule(keyframe);
   addStyleRule(imgBaseStyle);
+};
 
-  const { containerHeight, containerWidth, size, optionalStyle } =
-    createOptionalProps(root, displaySize, marginRatio);
+/**
+ * DOMに挿入する画像群を作成
+ * @param {string} imgClass 画像に付与するクラス
+ * @param {number} containerWidth ルート要素の幅
+ * @param {number} containerHeight ルート要素の高さ
+ * @param {number} size 画像のサイズ
+ * @param {number} marginRatio 画像と画像の間隔
+ * @param {string[]} imgArray 画像パスを格納した配列
+ * @param {number} duration 1周する時間
+ * @param {OptionalStyle} optionalStyle 画像に追加するスタイル
+ * @returns {imgElms: DocumentFragment; ratio: number;}
+ */
+const createImgElms = (
+  imgClass: string,
+  containerWidth: number,
+  containerHeight: number,
+  size: number,
+  marginRatio: number,
+  imgArray: string[],
+  duration: number,
+  optionalStyle: OptionalStyle
+) => {
+  const fragment = document.createDocumentFragment();
 
   const trackLength =
     (containerHeight + containerWidth) * 2 - size * marginRatio * 8;
@@ -113,8 +146,42 @@ const init = ({
     });
     fragment.appendChild(imgElm);
   }
+  return {
+    imgElms: fragment,
+    ratio: ratio,
+  };
+};
 
-  root.appendChild(fragment);
+/**
+ * 観覧車の要素を作成し挿入
+ * @param {HTMLElement} root 挿入先の要素
+ * @param {string[]} imgArray 画像URLリスト
+ * @returns {imagesClassName: string;animationDelay: number;}
+ */
+const init = ({
+  root,
+  imgArray,
+  duration,
+  marginRatio,
+  displaySize,
+}: initProps) => {
+  const imgClass = `ferrisWheel__img-${Date.now()}`;
+
+  const { containerHeight, containerWidth, size, optionalStyle } =
+    createOptionalProps(root, displaySize, marginRatio);
+  const { imgElms, ratio } = createImgElms(
+    imgClass,
+    containerWidth,
+    containerHeight,
+    size,
+    marginRatio,
+    imgArray,
+    duration,
+    optionalStyle
+  );
+
+  addBaseStyle(imgClass, duration);
+  root.appendChild(imgElms);
   return {
     imagesClassName: imgClass,
     animationDelay: ratio,
@@ -141,9 +208,10 @@ class FerrisWheel {
     this.marginRatio = marginRatio;
     this.displaySize = displaySize;
   }
+
   /**
    * 観覧車の作成
-   * @returns {}
+   * @returns {FerrisWheel}
    */
   init() {
     const { root, imgArray, duration, marginRatio, displaySize, resize } = this;

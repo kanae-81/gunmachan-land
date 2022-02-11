@@ -73,7 +73,13 @@ const createOptionalProps = (
   };
 };
 
-const addBaseStyle = (imgClass: string, size: number, duration: number) => {
+/**
+ * 画像の基本スタイルをスタイルシートに挿入
+ * @param {string} imgClass
+ * @param {number} duration
+ * @returns {void}
+ */
+const addBaseStyle = (imgClass: string, duration: number): void => {
   const upper = 9999;
   const lower = 8888;
   const keyframe = `
@@ -195,7 +201,7 @@ const init = ({
     optionalStyle
   );
 
-  addBaseStyle(imgClass, size, duration);
+  addBaseStyle(imgClass, duration);
   root.appendChild(imgElms);
   return {
     imagesClassName: imgClass,
