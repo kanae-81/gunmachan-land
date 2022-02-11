@@ -1,106 +1,98 @@
 /* eslint-disable no-undef */
 import GchanLand from '/dist/index';
 
-const execFerrisWheel = () => {
-  const root = document.querySelector('[data-ferrisWheel]');
-  const gchan = new GchanLand(root);
-  let ferrisWheel = null;
+const createButtons = (atraction) => ({
+  create: document.querySelector(`[data-${atraction}="create"]`),
+  destroy: document.querySelector(`[data-${atraction}="destroy"]`),
+  pause: document.querySelector(`[data-${atraction}="pause"]`),
+  restart: document.querySelector(`[data-${atraction}="restart"]`),
+});
 
-  const buttons = {
-    create: document.querySelector('[data-ferrisWheel="create"]'),
-    destroy: document.querySelector('[data-ferrisWheel="destroy"]'),
-    pause: document.querySelector('[data-ferrisWheel="pause"]'),
-    restart: document.querySelector('[data-ferrisWheel="restart"]'),
-  };
-
-  buttons.create.disabled = false;
-  buttons.destroy.disabled = true;
-  buttons.pause.disabled = true;
-  buttons.restart.disabled = true;
-
-  buttons.create.addEventListener('click', () => {
-    ferrisWheel = gchan.ferrisWheel(10, '10%', 0.6);
-    buttons.create.disabled = true;
-    buttons.destroy.disabled = false;
-    buttons.pause.disabled = false;
-    buttons.restart.disabled = false;
-  });
-  buttons.destroy.addEventListener('click', () => {
-    if (!ferrisWheel) return;
-    ferrisWheel.destroy();
-    ferrisWheel = null;
-    buttons.create.disabled = false;
-    buttons.destroy.disabled = true;
-    buttons.pause.disabled = true;
-    buttons.restart.disabled = true;
-  });
-  buttons.restart.addEventListener('click', () => {
-    if (!ferrisWheel) return;
-    ferrisWheel.restart();
-  });
-  buttons.pause.addEventListener('click', () => {
-    if (!ferrisWheel) return;
-    ferrisWheel.pause();
-  });
-
-  window.addEventListener('resize', () => {
-    if (!ferrisWheel) return;
-    ferrisWheel.resize();
-  });
+const operateAtraction = (buttons, type) => {
+  switch (type) {
+    case 'create':
+      buttons.create.disabled = true;
+      buttons.destroy.disabled = false;
+      buttons.pause.disabled = false;
+      buttons.restart.disabled = true;
+      break;
+    case 'destroy':
+      buttons.create.disabled = false;
+      buttons.destroy.disabled = true;
+      buttons.pause.disabled = true;
+      buttons.restart.disabled = true;
+      break;
+    case 'init':
+      buttons.create.disabled = false;
+      buttons.destroy.disabled = true;
+      buttons.pause.disabled = true;
+      buttons.restart.disabled = true;
+      break;
+    case 'restart':
+      buttons.create.disabled = true;
+      buttons.destroy.disabled = false;
+      buttons.pause.disabled = false;
+      buttons.restart.disabled = true;
+      break;
+    case 'pause':
+      buttons.create.disabled = true;
+      buttons.destroy.disabled = false;
+      buttons.pause.disabled = true;
+      buttons.restart.disabled = false;
+      break;
+    default:
+      break;
+  }
 };
 
-const execMerryGoRound = () => {
-  const root = document.querySelector('[data-merryGoRound]');
+const execAtraction = (atraction, ...option) => {
+  const root = document.querySelector(`[data-${atraction}]`);
   const gchan = new GchanLand(root);
-  let merryGoRound = null;
+  let atractionObj = null;
 
-  const buttons = {
-    create: document.querySelector('[data-merryGoRound="create"]'),
-    destroy: document.querySelector('[data-merryGoRound="destroy"]'),
-    pause: document.querySelector('[data-merryGoRound="pause"]'),
-    restart: document.querySelector('[data-merryGoRound="restart"]'),
-  };
-
-  buttons.create.disabled = false;
-  buttons.destroy.disabled = true;
-  buttons.pause.disabled = true;
-  buttons.restart.disabled = true;
+  const buttons = createButtons(atraction);
+  operateAtraction(buttons, 'init');
 
   buttons.create.addEventListener('click', () => {
-    merryGoRound = gchan.merryGoRound(10, '10%', 0.5);
-    buttons.create.disabled = true;
-    buttons.destroy.disabled = false;
-    buttons.pause.disabled = false;
-    buttons.restart.disabled = false;
+    atractionObj = gchan[atraction](...option);
+    operateAtraction(buttons, 'create');
   });
-
   buttons.destroy.addEventListener('click', () => {
-    if (!merryGoRound) return;
-    merryGoRound.destroy();
-    merryGoRound = null;
-    buttons.create.disabled = false;
-    buttons.destroy.disabled = true;
-    buttons.pause.disabled = true;
-    buttons.restart.disabled = true;
+    if (!atractionObj) return;
+    atractionObj.destroy();
+    atractionObj = null;
+    operateAtraction(buttons, 'destroy');
   });
-
   buttons.restart.addEventListener('click', () => {
-    if (!merryGoRound) return;
-    merryGoRound.restart();
+    if (!atractionObj) return;
+    atractionObj.restart();
+    operateAtraction(buttons, 'restart');
   });
-
   buttons.pause.addEventListener('click', () => {
-    if (!merryGoRound) return;
-    merryGoRound.pause();
+    if (!atractionObj) return;
+    atractionObj.pause();
+    operateAtraction(buttons, 'pause');
   });
 
   window.addEventListener('resize', () => {
-    if (!merryGoRound) return;
-    merryGoRound.resize();
+    if (!atractionObj) return;
+    atractionObj.resize();
   });
 };
 
 window.addEventListener('load', () => {
-  execFerrisWheel();
-  execMerryGoRound();
+  const atractionList = [
+    {
+      name: 'ferrisWheel',
+      option: [10, '10%', 0.6],
+    },
+    {
+      name: 'merryGoRound',
+      option: [10, '5%', 0.5],
+    },
+  ];
+  atractionList.forEach((atraction) => {
+    const { name, option } = atraction;
+    execAtraction(name, ...option);
+  });
 });
