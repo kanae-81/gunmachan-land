@@ -1,4 +1,5 @@
 import FerrisWheel from './module/ferrisWheel';
+import MerryGoRound from './module/merryGoRound';
 import { gunmachanImages } from './module/utils/images';
 
 interface GchanLand {
@@ -10,6 +11,11 @@ interface GchanLand {
     displaySize: string,
     marginRatio: number
   ): FerrisWheel;
+  merryGoRound(
+    duration: number,
+    displaySize: string,
+    marginRatio: number
+  ): MerryGoRound;
 }
 
 const version = '1.0.0';
@@ -31,6 +37,23 @@ class GchanLand implements GchanLand {
   ferrisWheel(duration: number, displaySize: string, marginRatio: number) {
     const { root, imgArray } = this;
     return new FerrisWheel({
+      root,
+      imgArray,
+      duration,
+      marginRatio,
+      displaySize,
+    }).init();
+  }
+  /**
+   * 観覧車
+   * @param {number} duration 1周する時間 ( 秒数 )
+   * @param {string} displaySize  ゴンドラのサイズ ( px or %: 要素の横幅に対する相対値 )
+   * @param {number} marginRatio ゴンドラ間のマージン ( 1つのゴンドラの大きさに対する相対値 )
+   * @returns
+   */
+  merryGoRound(duration: number, displaySize: string, marginRatio: number) {
+    const { root, imgArray } = this;
+    return new MerryGoRound({
       root,
       imgArray,
       duration,

@@ -1,6 +1,6 @@
 import { shuffleImage, createImg } from './utils/images';
 import { addStyleRule } from './utils/utils';
-interface FerrisWheel {
+interface MerryGoRound {
   root: HTMLElement;
   imgArray: string[];
   duration: number;
@@ -9,7 +9,7 @@ interface FerrisWheel {
   imagesClassName?: string;
   animationDelay?: number;
   test: string;
-  init(): FerrisWheel;
+  init(): MerryGoRound;
   resize(): void;
   pause(): void;
   restart(): void;
@@ -28,7 +28,6 @@ interface OptionalStyle {
   width: string;
   height: string;
   offsetPath: string;
-  margin: string;
 }
 
 /**
@@ -50,7 +49,7 @@ const createOptionalProps = (
     ? Number(displaySize.replace('px', ''))
     : containerWidth * (Number(displaySize.replace('%', '')) / 100);
   const margin = size * marginRatio;
-  const pathWidth = containerWidth - margin * 2;
+  const pathWidth = containerWidth - size / 2;
   const pathHeight = containerHeight - margin * 2;
   return {
     containerHeight,
@@ -62,14 +61,15 @@ const createOptionalProps = (
     optionalStyle: {
       width: `${size}px`,
       height: `${size}px`,
-      offsetPath: `path('m 0 0 l ${pathWidth} 0 l 0 ${pathHeight} l -${pathWidth} 0 l 0 -${pathHeight} z')`,
-      margin: `${margin}px`,
+      offsetPath: `path('M ${pathWidth} ${pathHeight} l -${
+        containerWidth - size
+      } 0  Z')`,
     },
   };
 };
 
 /**
- * 観覧車の要素を作成し挿入
+ * メリーゴーランドの要素を作成し挿入
  * @param {HTMLElement} root 挿入先の要素
  * @param {string[]} imgArray 画像URLリスト
  * @returns {void}
@@ -82,13 +82,33 @@ const init = ({
   displaySize,
 }: initProps) => {
   const fragment = document.createDocumentFragment();
-  const imgClass = `ferrisWheel__img-${Date.now()}`;
+  const imgClass = `MerryGoRound__img-${Date.now()}`;
+  const upper = 9999;
+  const lower = 8888;
 
-  const keyframe = `@keyframes move{
-      to {
-        offset-distance: 100%;
+  const keyframe = `
+    @keyframes move{
+      0% {
+        offset-distance: 0;
+        top: -3%;
+        z-index: ${upper};
       }
-    }`;
+      20%,45% {
+        top: 0%;
+      }
+      35%,55%,75% {
+        top: -3%;
+      }
+      60%,90% {
+        top: -6%;
+      }
+      100% {
+        top: -3%;
+        offset-distance: 100%;
+        z-index: ${lower};
+      }
+    }
+  `;
   addStyleRule(keyframe);
   const imgBaseStyle = `
     .${imgClass} {
@@ -96,23 +116,24 @@ const init = ({
       top: 0px;
       left: 0px;
       object-fit: cover;
-      border-radius: 50%;
       box-shadow: 0 0 3px #000;
-      z-index: 9999;
       offset-rotate: 0deg;
+      clip-path: ellipse(57% 77% at 50% 78%);
       animation: move ${duration}s infinite linear;
     }
   `;
   addStyleRule(imgBaseStyle);
 
-  const { containerHeight, containerWidth, size, optionalStyle } =
-    createOptionalProps(root, displaySize, marginRatio);
+  const { containerWidth, size, optionalStyle } = createOptionalProps(
+    root,
+    displaySize,
+    marginRatio
+  );
 
-  const trackLength =
-    (containerHeight + containerWidth) * 2 - size * marginRatio * 8;
-  const waitLength = size * (1 + marginRatio);
-  const count = Math.floor(trackLength / waitLength);
-  const ratio = (duration * waitLength) / trackLength;
+  const trackLength = (containerWidth - size) * 2;
+  const waitLength = size * marginRatio;
+  const count = Math.floor(trackLength / (waitLength + size));
+  const ratio = (duration * (waitLength + size)) / trackLength;
   const getDisplayImageAry = () => {
     const images = shuffleImage(imgArray);
     if (count <= images.length) {
@@ -147,9 +168,9 @@ const init = ({
 };
 
 /**
- * ぐんまちゃん観覧車
+ * ぐんまちゃんメリーゴーランド
  */
-class FerrisWheel {
+class MerryGoRound {
   /**
    * @constructor
    */
@@ -167,7 +188,7 @@ class FerrisWheel {
     this.displaySize = displaySize;
   }
   /**
-   * 観覧車の作成
+   * メリーゴーランドの作成
    * @returns {}
    */
   init() {
@@ -185,7 +206,7 @@ class FerrisWheel {
   }
 
   /**
-   * 観覧車のリサイズ
+   * メリーゴーランドのリサイズ
    * @returns {void}
    */
   resize() {
@@ -208,7 +229,7 @@ class FerrisWheel {
   }
 
   /**
-   * 観覧車の一時停止
+   * メリーゴーランドの一時停止
    * @returns {void}
    */
   pause() {
@@ -222,7 +243,7 @@ class FerrisWheel {
   }
 
   /**
-   * 観覧車の再生
+   * メリーゴーランドの再生
    * @returns {void}
    */
   restart() {
@@ -236,7 +257,7 @@ class FerrisWheel {
   }
 
   /**
-   * 観覧車の破棄
+   * メリーゴーランドの破棄
    * @param {number} delay 画像削除の間隔(秒数指定)
    * @returns {void}
    */
@@ -252,4 +273,4 @@ class FerrisWheel {
   }
 }
 
-export default FerrisWheel;
+export default MerryGoRound;
