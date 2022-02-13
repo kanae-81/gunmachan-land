@@ -7,7 +7,8 @@
   width: 100%;
   padding: 16px 32px;
   box-shadow: 0 0 5px #000;
-  z-index: 1000;
+  z-index: 10000;
+  background-color: rgba(255, 255, 255, 0.9);
   &__logo {
     height: 80px;
   }

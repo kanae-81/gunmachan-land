@@ -2,7 +2,7 @@ import { increaseImageAry, createImgElm } from './utils/images';
 import { addStyleRule } from './utils/utils';
 import { initProps, OptionalStyle } from '../@types/atraction';
 
-interface FerrisWheel {
+interface MerryGoRound {
   root: HTMLElement;
   imgArray: string[];
   duration: number;
@@ -10,7 +10,7 @@ interface FerrisWheel {
   displaySize: string;
   imagesClassName?: string;
   animationDelay?: number;
-  init(): FerrisWheel;
+  init(): MerryGoRound;
   resize(): void;
   pause(): void;
   restart(): void;
@@ -27,16 +27,16 @@ interface FerrisWheel {
 const createOptionalStyles = (
   size: number,
   containerWidth: number,
-  containerHeight: number,
-  margin: number
+  containerHeight: number
 ): OptionalStyle => {
-  const pathWidth = containerWidth - margin * 2;
-  const pathHeight = containerHeight - margin * 2;
+  const pathWidth = containerWidth + size;
+  const pathHeight = containerHeight - size / 2;
   return {
     width: `${size}px`,
     height: `${size}px`,
-    offsetPath: `path('m 0 0 l ${pathWidth} 0 l 0 ${pathHeight} l -${pathWidth} 0 l 0 -${pathHeight} z')`,
-    margin: `${margin}px`,
+    offsetPath: `path('m ${pathWidth} ${pathHeight} l -${
+      pathWidth + size
+    } 0  Z')`,
   };
 };
 
@@ -62,15 +62,14 @@ const createOptionalProps = (
   const optionalStyle = createOptionalStyles(
     size,
     containerWidth,
-    containerHeight,
-    margin
+    containerHeight
   );
   return {
     containerHeight,
     containerWidth,
     size,
     margin,
-    optionalStyle,
+    optionalStyle: optionalStyle,
   };
 };
 
@@ -81,24 +80,47 @@ const createOptionalProps = (
  * @returns {void}
  */
 const addBaseStyle = (imgClass: string, duration: number): void => {
-  const keyframe = `@keyframes move{
-      to {
-        offset-distance: 100%;
+  const upper = 9999;
+  const lower = 8888;
+  const keyframe = `
+    @keyframes move{
+      0% {
+        offset-distance: 0;
+        top: -3%;
+        z-index: ${upper};
       }
-    }`;
+      10%,30%, 90% {
+        top: 0%;
+      }
+      40%,55%,70% {
+        top: -3%;
+      }
+      20%,80% {
+        top: -6%;
+      }
+      60% {
+        top: -8%;
+      }
+      100% {
+        top: -2%;
+        offset-distance: 100%;
+        z-index: ${lower};
+      }
+    }
+  `;
   const imgBaseStyle = `
     .${imgClass} {
       position: absolute;
       top: 0px;
       left: 0px;
       object-fit: cover;
-      border-radius: 50%;
       box-shadow: 0 0 3px #000;
-      z-index: 9999;
       offset-rotate: 0deg;
+      clip-path: ellipse(57% 77% at 50% 78%);
       animation: move ${duration}s infinite linear;
     }
   `;
+
   addStyleRule(keyframe);
   addStyleRule(imgBaseStyle);
 };
@@ -107,7 +129,6 @@ const addBaseStyle = (imgClass: string, duration: number): void => {
  * DOMに挿入する画像群を作成
  * @param {string} imgClass 画像に付与するクラス
  * @param {number} containerWidth ルート要素の幅
- * @param {number} containerHeight ルート要素の高さ
  * @param {number} size 画像のサイズ
  * @param {number} marginRatio 画像と画像の間隔
  * @param {string[]} imgArray 画像パスを格納した配列
@@ -118,7 +139,6 @@ const addBaseStyle = (imgClass: string, duration: number): void => {
 const createImgElms = (
   imgClass: string,
   containerWidth: number,
-  containerHeight: number,
   size: number,
   marginRatio: number,
   imgArray: string[],
@@ -127,11 +147,10 @@ const createImgElms = (
 ) => {
   const fragment = document.createDocumentFragment();
 
-  const trackLength =
-    (containerHeight + containerWidth) * 2 - size * marginRatio * 8;
-  const waitLength = size * (1 + marginRatio);
-  const count = Math.floor(trackLength / waitLength);
-  const ratio = (duration * waitLength) / trackLength;
+  const trackLength = (containerWidth - size) * 2;
+  const waitLength = size * marginRatio;
+  const count = Math.floor(trackLength / (waitLength + size));
+  const ratio = (duration * (waitLength + size)) / trackLength;
 
   const displayImages = increaseImageAry(imgArray, count);
   for (let index = 0; index < count; index++) {
@@ -153,10 +172,9 @@ const createImgElms = (
 };
 
 /**
- * 観覧車の要素を作成し挿入
- * @param {HTMLElement} root 挿入先の要素
- * @param {string[]} imgArray 画像URLリスト
- * @returns {imagesClassName: string;animationDelay: number;}
+ * メリーゴーランドの要素を作成し挿入
+ * @param {initProps}
+ * @returns {imagesClassName: string; animationDelay: number;}
  */
 const init = ({
   root,
@@ -165,14 +183,17 @@ const init = ({
   marginRatio,
   displaySize,
 }: initProps) => {
-  const imgClass = `ferrisWheel__img-${Date.now()}`;
+  const imgClass = `MerryGoRound__img-${Date.now()}`;
 
-  const { containerHeight, containerWidth, size, optionalStyle } =
-    createOptionalProps(root, displaySize, marginRatio);
+  const { containerWidth, size, optionalStyle } = createOptionalProps(
+    root,
+    displaySize,
+    marginRatio
+  );
+
   const { imgElms, ratio } = createImgElms(
     imgClass,
     containerWidth,
-    containerHeight,
     size,
     marginRatio,
     imgArray,
@@ -189,9 +210,9 @@ const init = ({
 };
 
 /**
- * ぐんまちゃん観覧車
+ * ぐんまちゃんメリーゴーランド
  */
-class FerrisWheel {
+class MerryGoRound {
   /**
    * @constructor
    */
@@ -208,10 +229,9 @@ class FerrisWheel {
     this.marginRatio = marginRatio;
     this.displaySize = displaySize;
   }
-
   /**
-   * 観覧車の作成
-   * @returns {FerrisWheel}
+   * メリーゴーランドの作成
+   * @returns {MerryGoRound}
    */
   init() {
     const { root, imgArray, duration, marginRatio, displaySize, resize } = this;
@@ -229,7 +249,7 @@ class FerrisWheel {
   }
 
   /**
-   * 観覧車のリサイズ
+   * メリーゴーランドのリサイズ
    * @returns {void}
    */
   resize() {
@@ -252,4 +272,4 @@ class FerrisWheel {
   }
 }
 
-export default FerrisWheel;
+export default MerryGoRound;

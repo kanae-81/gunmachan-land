@@ -12,6 +12,7 @@ const webpackConfig = require('./webpack.config');
 
 const webserver = require('gulp-webserver');
 
+// typescript
 gulp.task('clean', function () {
   return del(['dist/*']);
 });
@@ -23,60 +24,61 @@ gulp.task('test:ts', () => {
     .js.pipe(gulp.dest('dist'));
 });
 gulp.task('watch:ts', () => {
-  gulp.watch('./src/**/*.ts', gulp.task('test:ts')).on('change', (cb) => {
-    const yellow = '\u001b[33m';
-    const reset = '\u001b[0m';
-    console.log(`change file -> ${yellow}"${cb}"${reset}`);
-    gulp.task('test:js');
-  });
+  gulp.watch('./src/**/*.ts', gulp.series('test:ts', 'demo:js'));
 });
 
-const ejsPath = './test/src/**/*.ejs';
-gulp.task('test:ejs', function () {
+// 以下demo用タスク
+const demoPath = {
+  src: './demo/src',
+  dist: './demo/dist',
+};
+
+const ejsPath = `${demoPath.src}/**/*.ejs`;
+gulp.task('demo:ejs', function () {
   return gulp
-    .src([ejsPath, '!./test/src/**/_*.ejs'])
+    .src([ejsPath, `!${demoPath.src}/**/_*.ejs`])
     .pipe(plumber())
     .pipe(ejs())
     .pipe(rename({ extname: '.html' }))
-    .pipe(gulp.dest('test/dist/'));
+    .pipe(gulp.dest(demoPath.dist));
 });
 gulp.task('watch:ejs', () => {
-  return gulp.watch(ejsPath, gulp.task('test:ejs'));
+  return gulp.watch(ejsPath, gulp.task('demo:ejs'));
 });
 
-const scssPath = './test/src/assettes/scss/**/*.scss';
-gulp.task('test:sass', function () {
+const scssPath = `${demoPath.src}/assettes/scss/**/*.scss`;
+gulp.task('demo:sass', function () {
   return gulp
-    .src([scssPath, '!./test/src/assettes/scss/**/_*.scss'])
+    .src([scssPath, `!${demoPath.src}/assettes/scss/**/_*.scss`])
     .pipe(sass({ outputStyle: 'expanded' }))
-    .pipe(gulp.dest('./test/dist/assettes/css'));
+    .pipe(gulp.dest(`${demoPath.dist}/assettes/css`));
 });
 gulp.task('watch:sass', () => {
-  return gulp.watch(scssPath, gulp.task('test:sass'));
+  return gulp.watch(scssPath, gulp.task('demo:sass'));
 });
 
-const imagePath = './test/src/assettes/images/*.+(jpg|jpeg|png|gif|svg)';
-gulp.task('test:image', function () {
+const imagePath = `${demoPath}/assettes/images/*.+(jpg|jpeg|png|gif|svg)`;
+gulp.task('demo:image', function () {
   const srcGlob = imagePath;
-  const dstGlob = './test/dist/assettes/images';
+  const dstGlob = `${demoPath}/assettes/images`;
   return gulp.src([srcGlob]).pipe(gulp.dest(dstGlob));
 });
 gulp.task('watch:image', () => {
-  return gulp.watch(imagePath, gulp.task('test:image'));
+  return gulp.watch(imagePath, gulp.task('demo:image'));
 });
 
-gulp.task('test:js', function (done) {
+gulp.task('demo:js', function (done) {
   webpackStream(webpackConfig, webpack).pipe(
-    gulp.dest('test/dist/assettes/js')
+    gulp.dest(`${demoPath.dist}/assettes/js`)
   );
   done();
 });
 gulp.task('watch:js', () => {
-  return gulp.watch('./test/src/assettes/js/*.js', gulp.task('test:js'));
+  return gulp.watch(`${demoPath.src}/assettes/js/*.js`, gulp.task('demo:js'));
 });
 
 gulp.task('server', function () {
-  return gulp.src('test/dist').pipe(
+  return gulp.src(demoPath.dist).pipe(
     webserver({
       livereload: true,
       open: true,
@@ -89,7 +91,7 @@ gulp.task('build', gulp.series('clean', 'test:ts'));
 
 gulp.task(
   'test',
-  gulp.series('test:ts', 'test:sass', 'test:ejs', 'test:js', 'test:image')
+  gulp.series('test:ts', 'demo:sass', 'demo:ejs', 'demo:js', 'demo:image')
 );
 gulp.task(
   'watch',

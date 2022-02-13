@@ -76,7 +76,7 @@ export const shuffleImage = (array: any[]) => {
   return array;
 };
 
-export const createImg = (
+export const createImgElm = (
   url: string,
   size: { width?: number; height?: number }
 ) => {
@@ -87,4 +87,17 @@ export const createImg = (
   if (width) imgElm.width = width;
   if (height) imgElm.height = height;
   return imgElm;
+};
+
+export const increaseImageAry = (imgArray: string[], count: number) => {
+  const images = shuffleImage(imgArray);
+  if (count <= images.length) {
+    return images;
+  }
+  let newArray = [...images];
+  const roopCount = Math.ceil(count / images.length);
+  for (let index = 0; index < roopCount; index++) {
+    newArray = [...newArray, ...images];
+  }
+  return newArray;
 };
