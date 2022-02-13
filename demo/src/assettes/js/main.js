@@ -80,6 +80,14 @@ const execAtraction = (atraction, ...option) => {
   });
 };
 
+const execAccompany = () => {
+  const atraction = 'accompany';
+  const root = document.querySelector(`[data-${atraction}]`);
+  console.log(`[data-${atraction}]`, root);
+  const gchan = new GchanLand(root);
+  gchan.accompany(10, '30px', 0.5);
+};
+
 window.addEventListener('load', () => {
   const atractionList = [
     {
@@ -95,4 +103,5 @@ window.addEventListener('load', () => {
     const { name, option } = atraction;
     execAtraction(name, ...option);
   });
+  execAccompany();
 });

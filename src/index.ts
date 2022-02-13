@@ -1,6 +1,7 @@
 import FerrisWheel from './module/ferrisWheel';
 import MerryGoRound from './module/merryGoRound';
 import { gunmachanImages } from './module/utils/images';
+import Accompany from './module/acompany';
 
 interface GchanLand {
   root: HTMLElement;
@@ -118,6 +119,34 @@ class GchanLand implements GchanLand {
     const { imagesClassName } = merryGoRoundObject;
     return {
       ...merryGoRoundObject,
+      pause: () => pause(imagesClassName),
+      restart: () => restart(imagesClassName),
+      destroy: (delay?: number) => destroy(imagesClassName, delay),
+    };
+  }
+
+  /**
+   * メリーゴーランド
+   * @param {number} duration 1周する時間 ( 秒数 )
+   * @param {string} displaySize  ゴンドラのサイズ ( px or %: 要素の横幅に対する相対値 )
+   * @param {number} marginRatio ゴンドラ間のマージン ( 1つのゴンドラの大きさに対する相対値 )
+   * @returns
+   */
+  accompany(displayCount: number, displaySize: string, marginRatio: number) {
+    const { root, imgArray, pause, restart, destroy } = this;
+    root.style.position = 'relative';
+    root.style.overflow = 'hidden';
+
+    const accompanyObject = new Accompany({
+      root,
+      imgArray,
+      marginRatio,
+      displaySize,
+      displayCount,
+    }).init();
+    const { imagesClassName } = accompanyObject;
+    return {
+      ...accompanyObject,
       pause: () => pause(imagesClassName),
       restart: () => restart(imagesClassName),
       destroy: (delay?: number) => destroy(imagesClassName, delay),
