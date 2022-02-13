@@ -83,9 +83,11 @@ const execAtraction = (atraction, ...option) => {
 const execAccompany = () => {
   const atraction = 'accompany';
   const root = document.querySelector(`[data-${atraction}]`);
-  console.log(`[data-${atraction}]`, root);
   const gchan = new GchanLand(root);
-  gchan.accompany(10, '30px', 0.5);
+  const accompanyObj = gchan.accompany(20, '10%', 0.1);
+  window.addEventListener('resize', () => {
+    accompanyObj.resize();
+  });
 };
 
 window.addEventListener('load', () => {

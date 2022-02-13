@@ -5,16 +5,13 @@ import { AccompanyInitProps } from '../@types/atraction';
 interface Accompany {
   root: HTMLElement;
   imgArray: string[];
-  marginRatio: number;
+  interval: number;
   displaySize: string;
   displayCount: number;
   imagesClassName?: string;
   animationDelay?: number;
   init(): Accompany;
   resize(): void;
-  pause(): void;
-  restart(): void;
-  destroy(delay?: number): void;
 }
 
 interface AccompanyRoot extends HTMLElement {
@@ -28,10 +25,9 @@ interface AccompanyImg extends HTMLImageElement {
 /**
  * 画像の基本スタイルをスタイルシートに挿入
  * @param {string} imgClass
- * @param {number} size
  * @returns {void}
  */
-const addBaseStyle = (imgClass: string): void => {
+const addBaseStyle = (imgClass: string) => {
   const imgBaseStyle = `
     .${imgClass} {
       position: absolute;
@@ -47,20 +43,16 @@ const addBaseStyle = (imgClass: string): void => {
 };
 
 /**
- * DOMに挿入する画像群を作成
+ * 画像群をDOMに挿入する
+ * @param {AccompanyRoot} root ルート要素
  * @param {string} imgClass 画像に付与するクラス
- * @param {number} containerWidth ルート要素の幅
- * @param {number} size 画像のサイズ
- * @param {number} marginRatio 画像と画像の間隔
  * @param {string[]} imgArray 画像パスを格納した配列
- * @param {number} duration 1周する時間
- * @param {OptionalStyle} optionalStyle 画像に追加するスタイル
- * @returns {imgElms: DocumentFragment; ratio: number;}
+ * @param {string} displaySize 画像の表示サイズ
+ * @param {number} displayCount 表示する画像の数
  */
-const createImgElms = (
+const insertImgElms = (
   root: HTMLElement,
   imgClass: string,
-  marginRatio: number,
   imgArray: string[],
   displaySize: string,
   displayCount: number
@@ -70,104 +62,79 @@ const createImgElms = (
   const size = displaySize.includes('px')
     ? Number(displaySize.replace('px', ''))
     : containerWidth * (Number(displaySize.replace('%', '')) / 100);
-  const margin = size * marginRatio;
-
-  const waitLength = size + margin;
-  console.log(waitLength);
-  const ratio = 0.1;
 
   const displayImages = increaseImageAry(imgArray, displayCount);
   for (let index = 0; index < displayCount; index++) {
     const imgElm = createImgElm(displayImages[index], {
       width: size,
       height: size,
-    });
+    }) as AccompanyImg;
     imgElm.classList.add(imgClass);
+    imgElm.style.zIndex = `${displayCount - index}`;
+    imgElm.accompanyLen = 0;
     fragment.appendChild(imgElm);
   }
-  return {
-    imgElms: fragment,
-    ratio: ratio,
-    size: size,
-  };
+  root.appendChild(fragment);
+  addBaseStyle(imgClass);
 };
 
 /**
  * メリーゴーランドの要素を作成し挿入
- * @param {initProps}
+ * @param {AccompanyInitProps}
  * @returns {imagesClassName: string; animationDelay: number;}
  */
 const init = ({
   root,
   imgArray,
-  marginRatio,
+  interval,
   displaySize,
   displayCount,
 }: AccompanyInitProps) => {
   const imgClass = `Accompany__img-${Date.now()}`;
   const accompanyRoot = root as AccompanyRoot;
-
-  const { imgElms, ratio } = createImgElms(
-    root,
-    imgClass,
-    marginRatio,
-    imgArray,
-    displaySize,
-    displayCount
-  );
-
-  addBaseStyle(imgClass);
-  root.appendChild(imgElms);
-  const imgs = document.querySelectorAll<AccompanyImg>(`.${imgClass}`);
   accompanyRoot.accompanyAry = [];
-  imgs.forEach((img, index) => {
-    img.style.zIndex = `${imgs.length - index}`;
-    img.accompanyLen = 0;
-  });
 
-  const move = () => {
+  insertImgElms(root, imgClass, imgArray, displaySize, displayCount);
+
+  const imgs = document.querySelectorAll<AccompanyImg>(`.${imgClass}`);
+  const moveEvent = new CustomEvent('move');
+  const handleMove = () => {
     accompanyRoot.addEventListener('mousemove', (e: MouseEvent) => {
-      const target = e.currentTarget;
+      const target = e.currentTarget as AccompanyRoot;
       if (target === null) return;
       const { accompanyAry } = accompanyRoot;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       const targetRect = target.getBoundingClientRect();
       const x = e.clientX - targetRect.left;
       const y = e.clientY - targetRect.top;
       const imgX = x + 8;
       const imgY = y + 8;
       accompanyRoot.accompanyAry = [...accompanyAry, { x: imgX, y: imgY }];
-      for (let index = 0; index < imgs.length; index++) {
-        const img = imgs[index];
-        setTimeout(() => {
-          img.dispatchEvent(moveEvent);
-          console.log('dispatch', index);
-        }, index * ratio * 1000);
-      }
+      imgs.forEach((img) => {
+        img.dispatchEvent(moveEvent);
+      });
     });
   };
-  const moveEvent = new CustomEvent('move');
+
   imgs.forEach((img, index) => {
     img.addEventListener('move', (e) => {
-      const target = e.currentTarget;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      const target = e.currentTarget as AccompanyImg;
       const { accompanyLen } = target;
       const { accompanyAry } = accompanyRoot;
       const length = accompanyAry.length;
-      for (let i = accompanyLen; index < length; i++) {
-        const ary = accompanyAry[i];
-        if (typeof ary === 'undefined') break;
-        const x = ary.x;
-        const y = ary.y;
-        img.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-        img.accompanyLen = i;
-      }
+      setTimeout(() => {
+        for (let i = accompanyLen; index < length; i++) {
+          const ary = accompanyAry[i];
+          if (typeof ary === 'undefined') break;
+          const x = ary.x;
+          const y = ary.y;
+          target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+          target.accompanyLen = i;
+        }
+      }, index * interval * 1000);
     });
   });
 
-  accompanyRoot.addEventListener('mouseenter', move);
+  accompanyRoot.addEventListener('mouseenter', handleMove);
   accompanyRoot.addEventListener('mouseleave', (e) => {
     const target = e.currentTarget;
     setTimeout(() => {
@@ -175,8 +142,8 @@ const init = ({
       imgs.forEach((img) => {
         img.accompanyLen = 0;
       });
-      target?.removeEventListener('mouseenter', move);
-    }, imgs.length * ratio * 1000);
+      target?.removeEventListener('mouseenter', handleMove);
+    }, imgs.length * interval * 1000);
   });
 
   return {
@@ -185,7 +152,7 @@ const init = ({
 };
 
 /**
- * ぐんまちゃんメリーゴーランド
+ * おともぐんまちゃん
  */
 class Accompany {
   /**
@@ -194,27 +161,27 @@ class Accompany {
   constructor({
     root,
     imgArray,
-    marginRatio,
+    interval,
     displaySize,
     displayCount,
   }: AccompanyInitProps) {
     this.root = root;
     this.imgArray = imgArray;
-    this.marginRatio = marginRatio;
+    this.interval = interval;
     this.displaySize = displaySize;
     this.displayCount = displayCount;
   }
   /**
-   * メリーゴーランドの作成
+   * おともぐんまちゃんの作成
    * @returns {MerryGoRound}
    */
   init() {
-    const { root, imgArray, marginRatio, displaySize, displayCount, resize } =
+    const { root, imgArray, interval, displaySize, displayCount, resize } =
       this;
     const { imagesClassName } = init({
       root,
       imgArray,
-      marginRatio,
+      interval,
       displaySize,
       displayCount,
     });
@@ -224,11 +191,23 @@ class Accompany {
   }
 
   /**
-   * メリーゴーランドのリサイズ
+   * おともぐんまちゃんのリサイズ
    * @returns {void}
    */
   resize() {
-    console.log('');
+    const { root, displaySize, imagesClassName } = this;
+    const containerWidth = root.offsetWidth;
+    const imgs = document.querySelectorAll<HTMLImageElement>(
+      `.${imagesClassName}`
+    );
+    if (!displaySize.includes('px')) {
+      const size =
+        containerWidth * (Number(displaySize.replace('%', '')) / 100);
+      imgs.forEach((img) => {
+        img.style.width = `${size}px`;
+        img.style.height = `${size}px`;
+      });
+    }
   }
 }
 

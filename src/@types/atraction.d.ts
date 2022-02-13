@@ -10,7 +10,7 @@ export interface AccompanyInitProps {
   root: HTMLElement;
   imgArray: string[];
   displaySize: string;
-  marginRatio: number;
+  interval: number;
   displayCount: number;
 }
 export interface OptionalStyle {

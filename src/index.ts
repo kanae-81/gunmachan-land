@@ -1,7 +1,7 @@
 import FerrisWheel from './module/ferrisWheel';
 import MerryGoRound from './module/merryGoRound';
-import { gunmachanImages } from './module/utils/images';
 import Accompany from './module/acompany';
+import { gunmachanImages } from './module/utils/images';
 
 interface GchanLand {
   root: HTMLElement;
@@ -20,6 +20,11 @@ interface GchanLand {
     displaySize: string,
     marginRatio: number
   ): MerryGoRound;
+  accompany(
+    displayCount: number,
+    displaySize: string,
+    interval: number
+  ): Accompany;
 }
 
 const version = '1.0.0';
@@ -126,31 +131,24 @@ class GchanLand implements GchanLand {
   }
 
   /**
-   * メリーゴーランド
-   * @param {number} duration 1周する時間 ( 秒数 )
-   * @param {string} displaySize  ゴンドラのサイズ ( px or %: 要素の横幅に対する相対値 )
-   * @param {number} marginRatio ゴンドラ間のマージン ( 1つのゴンドラの大きさに対する相対値 )
+   * おともぐんまちゃん
+   * @param {number} displayCount おともにするぐんまちゃんの数
+   * @param {string} displaySize  おともにするぐんまちゃんのサイズ ( px or %: 要素の横幅に対する相対値 )
+   * @param {number} interval おともぐんまちゃん間のマージン ( 1つのゴンドラの大きさに対する相対値 )
    * @returns
    */
-  accompany(displayCount: number, displaySize: string, marginRatio: number) {
-    const { root, imgArray, pause, restart, destroy } = this;
+  accompany(displayCount: number, displaySize: string, interval: number) {
+    const { root, imgArray } = this;
     root.style.position = 'relative';
     root.style.overflow = 'hidden';
 
-    const accompanyObject = new Accompany({
+    return new Accompany({
       root,
       imgArray,
-      marginRatio,
+      interval,
       displaySize,
       displayCount,
     }).init();
-    const { imagesClassName } = accompanyObject;
-    return {
-      ...accompanyObject,
-      pause: () => pause(imagesClassName),
-      restart: () => restart(imagesClassName),
-      destroy: (delay?: number) => destroy(imagesClassName, delay),
-    };
   }
 }
 
