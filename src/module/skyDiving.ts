@@ -49,7 +49,7 @@ const createOptionalStyle = (
 ): OptionalStyle => ({
   top: `-${topPos}px`,
   left: `${leftPos}px`,
-  transition: `top ${speed}s cubic-bezier(0.38, 0, 0.78, 0), left ${speed}s cubic-bezier(0.38, 0, 0.78, 0)`,
+  transition: `top ${speed}s cubic-bezier(0.38, 0, 0.78, 0), left ${speed}s cubic-bezier(.77,-0.24,.83,.67)`,
 });
 
 /**
@@ -159,6 +159,7 @@ class SkyDiving {
    * @param {number} speed 落ちるスピード (秒)
    * @returns
    */
+  // TODO: ここの引数はinitに移す
   create(displaySize: string, speed: number) {
     const { root, imgArray, imagesClassName } = this;
     return create({ root, imgArray, displaySize, speed, imagesClassName });

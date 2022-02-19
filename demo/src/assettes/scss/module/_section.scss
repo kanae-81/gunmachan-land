@@ -15,11 +15,16 @@
     background-color: #fffaf0;
     box-shadow: 0 0 3px inset #000;
     &[data-ferriswheel],
-    &[data-merryGoRound],
+    &[data-merryGoRound] {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     &[data-skyDiving] {
       display: flex;
       align-items: center;
       justify-content: center;
+      height: calc(100vh - 152px);
     }
   }
 }
