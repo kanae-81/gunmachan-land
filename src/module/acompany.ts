@@ -1,5 +1,5 @@
 import { increaseImageAry, createImgElm } from './utils/images';
-import { addStyleRule } from './utils/utils';
+import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
 import { AccompanyInitProps } from '../@types/atraction';
 
 interface Accompany {
@@ -59,9 +59,8 @@ const insertImgElms = (
 ) => {
   const fragment = document.createDocumentFragment();
   const containerWidth = root.offsetWidth;
-  const size = displaySize.includes('px')
-    ? Number(displaySize.replace('px', ''))
-    : containerWidth * (Number(displaySize.replace('%', '')) / 100);
+  const size = convertStringSizeToNumbers(displaySize, containerWidth);
+  if (!size) return;
 
   const displayImages = increaseImageAry(imgArray, displayCount);
   for (let index = 0; index < displayCount; index++) {

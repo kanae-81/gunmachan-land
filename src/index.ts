@@ -1,6 +1,7 @@
 import FerrisWheel from './module/ferrisWheel';
 import MerryGoRound from './module/merryGoRound';
 import Accompany from './module/acompany';
+import SkyDiving from './module/skyDiving';
 import { gunmachanImages } from './module/utils/images';
 
 interface GchanLand {
@@ -128,6 +129,21 @@ class GchanLand implements GchanLand {
       restart: () => restart(imagesClassName),
       destroy: (delay?: number) => destroy(imagesClassName, delay),
     };
+  }
+
+  /**
+   * スカイダイビング
+   * @returns
+   */
+  skyDiving() {
+    const { root, imgArray } = this;
+    root.style.position = 'relative';
+    root.style.overflow = 'hidden';
+
+    return new SkyDiving({
+      root,
+      imgArray,
+    }).init();
   }
 
   /**

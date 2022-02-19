@@ -1,5 +1,5 @@
 import { increaseImageAry, createImgElm } from './utils/images';
-import { addStyleRule } from './utils/utils';
+import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
 import { initProps, OptionalStyle } from '../@types/atraction';
 
 interface FerrisWheel {
@@ -55,9 +55,9 @@ const createOptionalProps = (
 ) => {
   const containerWidth = root.offsetWidth;
   const containerHeight = root.offsetHeight;
-  const size = displaySize.includes('px')
-    ? Number(displaySize.replace('px', ''))
-    : containerWidth * (Number(displaySize.replace('%', '')) / 100);
+  const size = convertStringSizeToNumbers(displaySize, containerWidth);
+  if (!size) return {};
+
   const margin = size * marginRatio;
   const optionalStyle = createOptionalStyles(
     size,
@@ -169,6 +169,8 @@ const init = ({
 
   const { containerHeight, containerWidth, size, optionalStyle } =
     createOptionalProps(root, displaySize, marginRatio);
+  if (!containerHeight || !containerWidth || !size || !optionalStyle) return {};
+
   const { imgElms, ratio } = createImgElms(
     imgClass,
     containerWidth,
@@ -241,6 +243,8 @@ class FerrisWheel {
       displaySize,
       marginRatio
     );
+    if (!optionalStyle) return;
+
     const images = document.querySelectorAll<HTMLImageElement>(
       `.${imagesClassName}`
     );

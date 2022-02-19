@@ -13,6 +13,12 @@ export interface AccompanyInitProps {
   interval: number;
   displayCount: number;
 }
+
+export interface SkyDivingInitProps {
+  root: HTMLElement;
+  imgArray: string[];
+}
+
 export interface OptionalStyle {
   [keyof: CSSStyleDeclaration]: string;
 }
