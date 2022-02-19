@@ -1,5 +1,6 @@
 import FerrisWheel from './module/ferrisWheel';
 import MerryGoRound from './module/merryGoRound';
+import Accompany from './module/acompany';
 import { gunmachanImages } from './module/utils/images';
 
 interface GchanLand {
@@ -19,6 +20,11 @@ interface GchanLand {
     displaySize: string,
     marginRatio: number
   ): MerryGoRound;
+  accompany(
+    displayCount: number,
+    displaySize: string,
+    interval: number
+  ): Accompany;
 }
 
 const version = '1.0.0';
@@ -122,6 +128,27 @@ class GchanLand implements GchanLand {
       restart: () => restart(imagesClassName),
       destroy: (delay?: number) => destroy(imagesClassName, delay),
     };
+  }
+
+  /**
+   * おともぐんまちゃん
+   * @param {number} displayCount おともにするぐんまちゃんの数
+   * @param {string} displaySize  おともにするぐんまちゃんのサイズ ( px or %: 要素の横幅に対する相対値 )
+   * @param {number} interval おともぐんまちゃん間のマージン ( 1つのゴンドラの大きさに対する相対値 )
+   * @returns
+   */
+  accompany(displayCount: number, displaySize: string, interval: number) {
+    const { root, imgArray } = this;
+    root.style.position = 'relative';
+    root.style.overflow = 'hidden';
+
+    return new Accompany({
+      root,
+      imgArray,
+      interval,
+      displaySize,
+      displayCount,
+    }).init();
   }
 }
 

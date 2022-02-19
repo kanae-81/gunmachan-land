@@ -6,6 +6,13 @@ export interface initProps {
   marginRatio: number;
 }
 
+export interface AccompanyInitProps {
+  root: HTMLElement;
+  imgArray: string[];
+  displaySize: string;
+  interval: number;
+  displayCount: number;
+}
 export interface OptionalStyle {
   [keyof: CSSStyleDeclaration]: string;
 }
