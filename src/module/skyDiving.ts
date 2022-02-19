@@ -1,6 +1,6 @@
 import { createImgElm, shuffleImage } from './utils/images';
 import { SkyDivingInitProps, OptionalStyle } from '../@types/atraction';
-import { addStyleRule } from './utils/utils';
+import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
 
 interface SkyDiving {
   root: HTMLElement;
@@ -65,9 +65,8 @@ const insertImgElms = (
   displaySize: string
 ) => {
   const containerWidth = root.offsetWidth;
-  const size = displaySize.includes('px')
-    ? Number(displaySize.replace('px', ''))
-    : containerWidth * (Number(displaySize.replace('%', '')) / 100);
+  const size = convertStringSizeToNumbers(displaySize, containerWidth);
+  if (!size) return {};
 
   const displayImg = shuffleImage(imgArray)[0];
   const imgElm = createImgElm(displayImg, {
@@ -104,6 +103,8 @@ const create = ({
   imagesClassName,
 }: SkyDivingCreateProps) => {
   const { imgElm, size } = insertImgElms(root, imgArray, displaySize);
+  if (!imgElm || !size) return;
+
   const rootWidth = root.clientWidth;
   const rootHeight = root.clientHeight;
   const startLftPos = getRandomNum(rootWidth - size);
@@ -151,6 +152,13 @@ class SkyDiving {
     this.imagesClassName = imagesClassName;
     return this;
   }
+
+  /**
+   *
+   * @param {string} displaySize ダイビングするぐんまちゃん のサイズ ( px or %: 要素の横幅に対する相対値 )
+   * @param {number} speed 落ちるスピード (秒)
+   * @returns
+   */
   create(displaySize: string, speed: number) {
     const { root, imgArray, imagesClassName } = this;
     return create({ root, imgArray, displaySize, speed, imagesClassName });
