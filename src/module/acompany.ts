@@ -9,9 +9,11 @@ interface Accompany {
   displaySize: string;
   displayCount: number;
   imagesClassName?: string;
+  // TODO: これあるんだっけ
   animationDelay?: number;
   init(): Accompany;
   resize(): void;
+  // TODO: destroyはあってもいいかも
 }
 
 /**

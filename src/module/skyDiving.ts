@@ -159,6 +159,7 @@ class SkyDiving {
    * @param {number} speed 落ちるスピード (秒)
    * @returns
    */
+  // TODO: ここの引数はinitに移す
   create(displaySize: string, speed: number) {
     const { root, imgArray, imagesClassName } = this;
     return create({ root, imgArray, displaySize, speed, imagesClassName });

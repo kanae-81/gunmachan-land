@@ -257,6 +257,7 @@ class MerryGoRound {
    * メリーゴーランドのリサイズ
    * @returns {void}
    */
+  // TODO: 引数で新しい値を受け取るように修正する！
   resize() {
     const { root, imagesClassName, displaySize, marginRatio } = this;
     if (!imagesClassName) return;
