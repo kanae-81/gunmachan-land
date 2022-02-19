@@ -90,6 +90,19 @@ const execAccompany = () => {
   });
 };
 
+const execSkyDiving = () => {
+  const atraction = 'skyDiving';
+  const root = document.querySelector(`[data-${atraction}]`);
+  const gchan = new GchanLand(root);
+  const skyDivingObj = gchan.skyDiving();
+
+  document
+    .querySelector('[data-skyDiving="create"]')
+    .addEventListener('click', () => {
+      skyDivingObj.create('5%', 2);
+    });
+};
+
 window.addEventListener('load', () => {
   const atractionList = [
     {
@@ -106,4 +119,5 @@ window.addEventListener('load', () => {
     execAtraction(name, ...option);
   });
   execAccompany();
+  execSkyDiving();
 });

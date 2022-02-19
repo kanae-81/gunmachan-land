@@ -14,26 +14,16 @@
     height: 500px;
     background-color: #fffaf0;
     box-shadow: 0 0 3px inset #000;
-    &[data-ferriswheel] {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    &[data-merryGoRound] {
+    &[data-ferriswheel],
+    &[data-merryGoRound],
+    &[data-skyDiving] {
       display: flex;
       align-items: center;
       justify-content: center;
     }
   }
 }
-.ferrisWheel {
-  width: 50%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 20px;
-}
-
+.ferrisWheel,
 .merryGoRound {
   width: 50%;
   display: grid;
@@ -41,6 +31,7 @@
   grid-template-rows: 1fr 1fr;
   gap: 20px;
 }
+
 .button {
   padding: 8px 16px;
   background-color: salmon;

@@ -62,7 +62,7 @@ export const gunmachanImages = [
   'https://res.cloudinary.com/djlxdxijw/image/upload/v1644123426/Gunmachan/102_olisil.jpg',
 ];
 
-export const shuffleImage = (array: any[]) => {
+export const shuffleImage = (array: string[]) => {
   const length = array.length;
   for (let i = length - 1; 0 < i; i--) {
     // 0〜(i+1)の範囲で値を取得
