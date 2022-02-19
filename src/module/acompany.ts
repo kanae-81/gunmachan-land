@@ -14,14 +14,6 @@ interface Accompany {
   resize(): void;
 }
 
-interface AccompanyRoot extends HTMLElement {
-  accompanyAry: { x: number; y: number }[];
-}
-
-interface AccompanyImg extends HTMLImageElement {
-  accompanyLen: number;
-}
-
 /**
  * 画像の基本スタイルをスタイルシートに挿入
  * @param {string} imgClass
@@ -35,7 +27,8 @@ const addBaseStyle = (imgClass: string) => {
       left: 0px;
       object-fit: cover;
       border-radius: 50%;
-      transition: transform 0.3s ease-out;
+      opacity: 0;
+      transition: transform 0.3s ease-out,opacity 0.3s ease-in;
     }
   `;
 
@@ -44,7 +37,7 @@ const addBaseStyle = (imgClass: string) => {
 
 /**
  * 画像群をDOMに挿入する
- * @param {AccompanyRoot} root ルート要素
+ * @param {HTMLElement} root ルート要素
  * @param {string} imgClass 画像に付与するクラス
  * @param {string[]} imgArray 画像パスを格納した配列
  * @param {string} displaySize 画像の表示サイズ
@@ -67,10 +60,9 @@ const insertImgElms = (
     const imgElm = createImgElm(displayImages[index], {
       width: size,
       height: size,
-    }) as AccompanyImg;
+    });
     imgElm.classList.add(imgClass);
     imgElm.style.zIndex = `${displayCount - index}`;
-    imgElm.accompanyLen = 0;
     fragment.appendChild(imgElm);
   }
   root.appendChild(fragment);
@@ -78,7 +70,7 @@ const insertImgElms = (
 };
 
 /**
- * メリーゴーランドの要素を作成し挿入
+ * おともぐんまちゃんの要素を作成し挿入
  * @param {AccompanyInitProps}
  * @returns {imagesClassName: string; animationDelay: number;}
  */
@@ -90,60 +82,57 @@ const init = ({
   displayCount,
 }: AccompanyInitProps) => {
   const imgClass = `Accompany__img-${Date.now()}`;
-  const accompanyRoot = root as AccompanyRoot;
-  accompanyRoot.accompanyAry = [];
 
   insertImgElms(root, imgClass, imgArray, displaySize, displayCount);
 
-  const imgs = document.querySelectorAll<AccompanyImg>(`.${imgClass}`);
-  const moveEvent = new CustomEvent('move');
-  const handleMove = () => {
-    accompanyRoot.addEventListener('mousemove', (e: MouseEvent) => {
-      const target = e.currentTarget as AccompanyRoot;
-      if (target === null) return;
-      const { accompanyAry } = accompanyRoot;
+  const imgs = document.querySelectorAll<HTMLImageElement>(`.${imgClass}`);
+
+  let timer: number[] = [];
+  const moveEventCallBack = (
+    img: HTMLImageElement,
+    index: number,
+    x: number,
+    y: number
+  ) => {
+    const moveTimer = window.setTimeout(() => {
+      img.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    }, index * interval * 1000);
+    timer = [...timer, moveTimer];
+  };
+
+  let accompanyAry: { x: number; y: number }[] = [];
+  const handleMouseMove = (e: MouseEvent) => {
+    const target = e.currentTarget;
+    if (target instanceof HTMLElement) {
       const targetRect = target.getBoundingClientRect();
       const x = e.clientX - targetRect.left;
       const y = e.clientY - targetRect.top;
       const imgX = x + 8;
       const imgY = y + 8;
-      accompanyRoot.accompanyAry = [...accompanyAry, { x: imgX, y: imgY }];
-      imgs.forEach((img) => {
-        img.dispatchEvent(moveEvent);
+      accompanyAry = [...accompanyAry, { x: imgX, y: imgY }];
+      imgs.forEach((img, index) => {
+        moveEventCallBack(img, index, imgX, imgY);
       });
+    }
+  };
+  const handleMouseSeenter = () => {
+    imgs.forEach((img) => {
+      img.style.opacity = '1';
     });
   };
-
-  imgs.forEach((img, index) => {
-    img.addEventListener('move', (e) => {
-      const target = e.currentTarget as AccompanyImg;
-      const { accompanyLen } = target;
-      const { accompanyAry } = accompanyRoot;
-      const length = accompanyAry.length;
-      setTimeout(() => {
-        for (let i = accompanyLen; index < length; i++) {
-          const ary = accompanyAry[i];
-          if (typeof ary === 'undefined') break;
-          const x = ary.x;
-          const y = ary.y;
-          target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-          target.accompanyLen = i;
-        }
-      }, index * interval * 1000);
+  const handleMouseLeave = (e: MouseEvent) => {
+    const { x, y } = accompanyAry[accompanyAry.length - 1];
+    imgs.forEach((img) => {
+      img.style.opacity = '0';
+      img.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
     });
-  });
+    timer.forEach((num) => clearTimeout(num));
+    accompanyAry = [];
+  };
 
-  accompanyRoot.addEventListener('mouseenter', handleMove);
-  accompanyRoot.addEventListener('mouseleave', (e) => {
-    const target = e.currentTarget;
-    setTimeout(() => {
-      accompanyRoot.accompanyAry = [];
-      imgs.forEach((img) => {
-        img.accompanyLen = 0;
-      });
-      target?.removeEventListener('mouseenter', handleMove);
-    }, imgs.length * interval * 1000);
-  });
+  root.addEventListener('mousemove', handleMouseMove);
+  root.addEventListener('mouseenter', handleMouseSeenter);
+  root.addEventListener('mouseleave', handleMouseLeave);
 
   return {
     imagesClassName: imgClass,
