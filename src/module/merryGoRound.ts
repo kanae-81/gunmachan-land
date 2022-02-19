@@ -36,7 +36,7 @@ const createOptionalStyles = (
     height: `${size}px`,
     offsetPath: `path('m ${pathWidth} ${pathHeight} l -${
       pathWidth + size
-    } 0  Z')`,
+    } 0 l ${pathWidth} 0 Z')`,
   };
 };
 
@@ -79,32 +79,36 @@ const createOptionalProps = (
  * @param {number} duration
  * @returns {void}
  */
-const addBaseStyle = (imgClass: string, duration: number): void => {
+const addBaseStyle = (
+  imgClass: string,
+  size: number,
+  duration: number
+): void => {
   const upper = 9999;
   const lower = 8888;
+  const top = `-${(4 * size) / 3}px`;
+  const base = `-${(2 * size) / 3}px`;
+  const bottom = '0';
   const keyframe = `
     @keyframes move{
       0% {
         offset-distance: 0;
-        top: -3%;
+        top: ${base};
         z-index: ${upper};
       }
-      10%,30%, 90% {
-        top: 0%;
+      20%, 40%, 70%, 90% {
+        top: ${bottom};
       }
-      40%,55%,70% {
-        top: -3%;
+      50% {
+        top: ${base};
+        z-index: ${lower};
       }
-      20%,80% {
-        top: -6%;
-      }
-      60% {
-        top: -8%;
+      10%, 30%, 60%, 80% {
+        top: ${top};
       }
       100% {
-        top: -2%;
+        top: ${base};
         offset-distance: 100%;
-        z-index: ${lower};
       }
     }
   `;
@@ -202,7 +206,7 @@ const init = ({
     optionalStyle
   );
 
-  addBaseStyle(imgClass, duration);
+  addBaseStyle(imgClass, size, duration);
   root.appendChild(imgElms);
   return {
     imagesClassName: imgClass,
