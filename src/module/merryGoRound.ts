@@ -1,6 +1,6 @@
 import { increaseImageAry, createImgElm } from './utils/images';
 import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
-import { initProps, OptionalStyle } from '../@types/atraction';
+import { initProps, OptionalStyle, CssProperty } from '../@types/attraction';
 
 interface MerryGoRound {
   root: HTMLElement;
@@ -8,7 +8,7 @@ interface MerryGoRound {
   duration: number;
   marginRatio: number;
   displaySize: string;
-  imagesClassName?: string;
+  imagesClassName: string;
   animationDelay?: number;
   init(): MerryGoRound;
   resize(): void;
@@ -164,8 +164,9 @@ const createImgElms = (
     });
     imgElm.classList.add(imgClass);
     imgElm.style.animationDelay = `${ratio * index}s`;
-    (Object.keys(optionalStyle) as [keyof OptionalStyle]).forEach((key) => {
-      imgElm.style[key] = optionalStyle[key];
+    Object.keys(optionalStyle).forEach((key) => {
+      const style: CssProperty = imgElm.style;
+      style[key] = optionalStyle[key];
     });
     fragment.appendChild(imgElm);
   }
@@ -194,7 +195,12 @@ const init = ({
     displaySize,
     marginRatio
   );
-  if (!containerWidth || !size || !optionalStyle) return {};
+  if (!containerWidth || !size || !optionalStyle) {
+    return {
+      imagesClassName: imgClass,
+      animationDelay: undefined,
+    };
+  }
 
   const { imgElms, ratio } = createImgElms(
     imgClass,
@@ -272,9 +278,11 @@ class MerryGoRound {
     const images = document.querySelectorAll<HTMLImageElement>(
       `.${imagesClassName}`
     );
+
     images.forEach((image) => {
-      (Object.keys(optionalStyle) as [keyof OptionalStyle]).forEach((key) => {
-        image.style[key] = optionalStyle[key];
+      Object.keys(optionalStyle).forEach((key) => {
+        const style: CssProperty = image.style;
+        style[key] = optionalStyle[key];
       });
     });
   }

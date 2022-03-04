@@ -1,14 +1,14 @@
 /* eslint-disable no-undef */
-import GchanLand from '/dist/index';
+import { skyDiving, accompany, ferrisWheel, merryGoRound } from '/dist/index';
 
-const createButtons = (atraction) => ({
-  create: document.querySelector(`[data-${atraction}="create"]`),
-  destroy: document.querySelector(`[data-${atraction}="destroy"]`),
-  pause: document.querySelector(`[data-${atraction}="pause"]`),
-  restart: document.querySelector(`[data-${atraction}="restart"]`),
+const createButtons = (attraction) => ({
+  create: document.querySelector(`[data-${attraction}="create"]`),
+  destroy: document.querySelector(`[data-${attraction}="destroy"]`),
+  pause: document.querySelector(`[data-${attraction}="pause"]`),
+  restart: document.querySelector(`[data-${attraction}="restart"]`),
 });
 
-const operateAtraction = (buttons, type) => {
+const operateAttraction = (buttons, type) => {
   switch (type) {
     case 'create':
       buttons.create.disabled = true;
@@ -45,56 +45,53 @@ const operateAtraction = (buttons, type) => {
   }
 };
 
-const execAtraction = (atraction, ...option) => {
-  const root = document.querySelector(`[data-${atraction}]`);
-  const gchan = new GchanLand(root);
-  let atractionObj = null;
+const execAttraction = (attraction, fn, ...option) => {
+  const root = document.querySelector(`[data-${attraction}]`);
+  let attractionObj = null;
 
-  const buttons = createButtons(atraction);
-  operateAtraction(buttons, 'init');
+  const buttons = createButtons(attraction);
+  operateAttraction(buttons, 'init');
 
   buttons.create.addEventListener('click', () => {
-    atractionObj = gchan[atraction](...option);
-    operateAtraction(buttons, 'create');
+    attractionObj = fn(...option, root);
+    operateAttraction(buttons, 'create');
   });
   buttons.destroy.addEventListener('click', () => {
-    if (!atractionObj) return;
-    atractionObj.destroy();
-    atractionObj = null;
-    operateAtraction(buttons, 'destroy');
+    if (!attractionObj) return;
+    attractionObj.destroy();
+    attractionObj = null;
+    operateAttraction(buttons, 'destroy');
   });
   buttons.restart.addEventListener('click', () => {
-    if (!atractionObj) return;
-    atractionObj.restart();
-    operateAtraction(buttons, 'restart');
+    if (!attractionObj) return;
+    attractionObj.restart();
+    operateAttraction(buttons, 'restart');
   });
   buttons.pause.addEventListener('click', () => {
-    if (!atractionObj) return;
-    atractionObj.pause();
-    operateAtraction(buttons, 'pause');
+    if (!attractionObj) return;
+    attractionObj.pause();
+    operateAttraction(buttons, 'pause');
   });
 
   window.addEventListener('resize', () => {
-    if (!atractionObj) return;
-    atractionObj.resize();
+    if (!attractionObj) return;
+    attractionObj.resize();
   });
 };
 
 const execAccompany = () => {
-  const atraction = 'accompany';
-  const root = document.querySelector(`[data-${atraction}]`);
-  const gchan = new GchanLand(root);
-  const accompanyObj = gchan.accompany(20, '10%', 0.1);
+  const attraction = 'accompany';
+  const root = document.querySelector(`[data-${attraction}]`);
+  const accompanyObj = accompany(20, '10%', 0.1, root);
   window.addEventListener('resize', () => {
     accompanyObj.resize();
   });
 };
 
 const execSkyDiving = () => {
-  const atraction = 'skyDiving';
-  const root = document.querySelector(`[data-${atraction}]`);
-  const gchan = new GchanLand(root);
-  const skyDivingObj = gchan.skyDiving();
+  const attraction = 'skyDiving';
+  const root = document.querySelector(`[data-${attraction}]`);
+  const skyDivingObj = skyDiving(root);
 
   document
     .querySelector('[data-skyDiving="create"]')
@@ -104,19 +101,21 @@ const execSkyDiving = () => {
 };
 
 window.addEventListener('load', () => {
-  const atractionList = [
+  const attractionList = [
     {
       name: 'ferrisWheel',
+      fn: ferrisWheel,
       option: [10, '10%', 0.6],
     },
     {
       name: 'merryGoRound',
+      fn: merryGoRound,
       option: [10, '5%', 0.5],
     },
   ];
-  atractionList.forEach((atraction) => {
-    const { name, option } = atraction;
-    execAtraction(name, ...option);
+  attractionList.forEach((attraction) => {
+    const { name, fn, option } = attraction;
+    execAttraction(name, fn, ...option);
   });
   execAccompany();
   execSkyDiving();

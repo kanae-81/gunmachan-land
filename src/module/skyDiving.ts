@@ -1,5 +1,9 @@
 import { createImgElm, shuffleImage } from './utils/images';
-import { SkyDivingInitProps, OptionalStyle } from '../@types/atraction';
+import {
+  SkyDivingInitProps,
+  OptionalStyle,
+  CssProperty,
+} from '../@types/attraction';
 import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
 
 interface SkyDiving {
@@ -112,8 +116,9 @@ const create = ({
 
   imgElm.classList.add(imagesClassName);
   const baseStyle = createOptionalStyle(size, startLftPos, speed);
-  (Object.keys(baseStyle) as (keyof OptionalStyle)[]).forEach((style) => {
-    imgElm.style[style] = baseStyle[style];
+  Object.keys(baseStyle).forEach((style) => {
+    const styles: CssProperty = imgElm.style;
+    styles[style] = baseStyle[style];
     imgElm.addEventListener('transitionend', (e: TransitionEvent) => {
       if (e.currentTarget instanceof HTMLElement) {
         e.currentTarget.remove();

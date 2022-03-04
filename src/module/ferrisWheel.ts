@@ -1,6 +1,6 @@
 import { increaseImageAry, createImgElm } from './utils/images';
 import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
-import { initProps, OptionalStyle } from '../@types/atraction';
+import { CssProperty, initProps, OptionalStyle } from '../@types/attraction';
 
 interface FerrisWheel {
   root: HTMLElement;
@@ -8,7 +8,7 @@ interface FerrisWheel {
   duration: number;
   marginRatio: number;
   displaySize: string;
-  imagesClassName?: string;
+  imagesClassName: string;
   animationDelay?: number;
   init(): FerrisWheel;
   resize(): void;
@@ -141,8 +141,9 @@ const createImgElms = (
     });
     imgElm.classList.add(imgClass);
     imgElm.style.animationDelay = `${ratio * index}s`;
-    (Object.keys(optionalStyle) as [keyof OptionalStyle]).forEach((key) => {
-      imgElm.style[key] = optionalStyle[key];
+    Object.keys(optionalStyle).forEach((key) => {
+      const style: CssProperty = imgElm.style;
+      style[key] = optionalStyle[key];
     });
     fragment.appendChild(imgElm);
   }
@@ -156,7 +157,7 @@ const createImgElms = (
  * 観覧車の要素を作成し挿入
  * @param {HTMLElement} root 挿入先の要素
  * @param {string[]} imgArray 画像URLリスト
- * @returns {imagesClassName: string;animationDelay: number;}
+ * @returns {imagesClassName: string, animationDelay: number;}
  */
 const init = ({
   root,
@@ -169,7 +170,12 @@ const init = ({
 
   const { containerHeight, containerWidth, size, optionalStyle } =
     createOptionalProps(root, displaySize, marginRatio);
-  if (!containerHeight || !containerWidth || !size || !optionalStyle) return {};
+  if (!containerHeight || !containerWidth || !size || !optionalStyle) {
+    return {
+      imagesClassName: imgClass,
+      animationDelay: undefined,
+    };
+  }
 
   const { imgElms, ratio } = createImgElms(
     imgClass,
@@ -250,8 +256,9 @@ class FerrisWheel {
       `.${imagesClassName}`
     );
     images.forEach((image) => {
-      (Object.keys(optionalStyle) as [keyof OptionalStyle]).forEach((key) => {
-        image.style[key] = optionalStyle[key];
+      Object.keys(optionalStyle).forEach((key) => {
+        const style: CssProperty = image.style;
+        style[key] = optionalStyle[key];
       });
     });
   }
