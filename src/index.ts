@@ -1,171 +1,161 @@
 import FerrisWheel from './module/ferrisWheel';
 import MerryGoRound from './module/merryGoRound';
-import Accompany from './module/acompany';
+import Accompany from './module/accompany';
 import SkyDiving from './module/skyDiving';
 import { gunmachanImages } from './module/utils/images';
 
-interface GchanLand {
-  root: HTMLElement;
-  imgArray: string[];
-  version: string;
-  pause(imagesClassName: string | undefined): void;
-  restart(imagesClassName: string | undefined): void;
-  destroy(imagesClassName: string | undefined, delay?: number): void;
-  ferrisWheel(
-    duration: number,
-    displaySize: string,
-    marginRatio: number
-  ): FerrisWheel;
-  merryGoRound(
-    duration: number,
-    displaySize: string,
-    marginRatio: number
-  ): MerryGoRound;
-  accompany(
-    displayCount: number,
-    displaySize: string,
-    interval: number
-  ): Accompany;
-}
+/**
+ * アニメーション一時停止
+ * @returns {void}
+ */
+const pause = (imagesClassName: string) => {
+  const imageElms = document.querySelectorAll<HTMLImageElement>(
+    `.${imagesClassName}`
+  );
+  imageElms.forEach((image) => {
+    image.style.animationPlayState = 'paused';
+  });
+};
+/**
+ * アニメーション再生
+ * @return {void}
+ */
+const restart = (imagesClassName: string) => {
+  const imageElms = document.querySelectorAll<HTMLImageElement>(
+    `.${imagesClassName}`
+  );
+  imageElms.forEach((image) => {
+    image.style.animationPlayState = 'running';
+  });
+};
 
-const version = '1.0.0';
-class GchanLand implements GchanLand {
-  constructor(root?: HTMLElement, imgArray?: string[]) {
-    this.root = root || document.body;
-    this.imgArray = imgArray || gunmachanImages;
-  }
-  static version = version;
+/**
+ * アニメーション破棄
+ * @param {number} delay 画像削除の間隔(秒数指定)
+ * @returns {void}
+ */
+const destroy = (imagesClassName: string, delay?: number) => {
+  const images = document.querySelectorAll(`.${imagesClassName}`);
+  const delayMs = delay ? delay * 1000 : 0;
+  images.forEach((image, index) => {
+    setTimeout(() => {
+      image.remove();
+    }, delayMs * index);
+  });
+};
 
-  /**
-   * アニメーション一時停止
-   * @returns {void}
-   */
-  pause(imagesClassName: string) {
-    const imageElms = document.querySelectorAll<HTMLImageElement>(
-      `.${imagesClassName}`
-    );
-    imageElms.forEach((image) => {
-      image.style.animationPlayState = 'paused';
-    });
-  }
-  /**
-   * アニメーション再生
-   * @roptionalStyleeturns {void}
-   */
-  restart(imagesClassName: string) {
-    const imageElms = document.querySelectorAll<HTMLImageElement>(
-      `.${imagesClassName}`
-    );
-    imageElms.forEach((image) => {
-      image.style.animationPlayState = 'running';
-    });
-  }
+/**
+ * 観覧車
+ * @param {number} duration 1周する時間 ( 秒数 )
+ * @param {string} displaySize  ゴンドラのサイズ ( px or %: 要素の横幅に対する相対値 )
+ * @param {number} marginRatio ゴンドラ間のマージン ( 1つのゴンドラの大きさに対する相対値 )
+ * @returns
+ */
+export const ferrisWheel = (
+  duration: number,
+  displaySize: string,
+  marginRatio: number,
+  root?: HTMLElement,
+  imgArray?: string[]
+) => {
+  const thisRoot = root || document.body;
+  const thisImgArray = imgArray || gunmachanImages;
+  thisRoot.style.position = 'relative';
 
-  /**
-   * アニメーション破棄
-   * @param {number} delay 画像削除の間隔(秒数指定)
-   * @returns {void}
-   */
-  destroy(imagesClassName: string, delay?: number) {
-    const images = document.querySelectorAll(`.${imagesClassName}`);
-    const delayMs = delay ? delay * 1000 : 0;
-    images.forEach((image, index) => {
-      setTimeout(() => {
-        image.remove();
-      }, delayMs * index);
-    });
-  }
+  const ferrisWheelObject = new FerrisWheel({
+    root: thisRoot,
+    imgArray: thisImgArray,
+    duration,
+    marginRatio,
+    displaySize,
+  }).init();
 
-  /**
-   * 観覧車
-   * @param {number} duration 1周する時間 ( 秒数 )
-   * @param {string} displaySize  ゴンドラのサイズ ( px or %: 要素の横幅に対する相対値 )
-   * @param {number} marginRatio ゴンドラ間のマージン ( 1つのゴンドラの大きさに対する相対値 )
-   * @returns
-   */
-  ferrisWheel(duration: number, displaySize: string, marginRatio: number) {
-    const { root, imgArray, pause, restart, destroy } = this;
-    root.style.position = 'relative';
+  const { imagesClassName } = ferrisWheelObject;
 
-    const ferrisWheelObject = new FerrisWheel({
-      root,
-      imgArray,
-      duration,
-      marginRatio,
-      displaySize,
-    }).init();
-    const { imagesClassName } = ferrisWheelObject;
-    return {
-      ...ferrisWheelObject,
-      pause: () => pause(imagesClassName),
-      restart: () => restart(imagesClassName),
-      destroy: (delay?: number) => destroy(imagesClassName, delay),
-    };
-  }
+  return {
+    ...ferrisWheelObject,
+    pause: () => pause(imagesClassName),
+    restart: () => restart(imagesClassName),
+    destroy: (delay?: number) => destroy(imagesClassName, delay),
+  };
+};
 
-  /**
-   * メリーゴーランド
-   * @param {number} duration 1周する時間 ( 秒数 )
-   * @param {string} displaySize  ゴンドラのサイズ ( px or %: 要素の横幅に対する相対値 )
-   * @param {number} marginRatio ゴンドラ間のマージン ( 1つのゴンドラの大きさに対する相対値 )
-   * @returns
-   */
-  merryGoRound(duration: number, displaySize: string, marginRatio: number) {
-    const { root, imgArray, pause, restart, destroy } = this;
-    root.style.position = 'relative';
-    root.style.overflow = 'hidden';
+/**
+ * メリーゴーランド
+ * @param {number} duration 1周する時間 ( 秒数 )
+ * @param {string} displaySize  ゴンドラのサイズ ( px or %: 要素の横幅に対する相対値 )
+ * @param {number} marginRatio ゴンドラ間のマージン ( 1つのゴンドラの大きさに対する相対値 )
+ * @returns
+ */
+export const merryGoRound = (
+  duration: number,
+  displaySize: string,
+  marginRatio: number,
+  root?: HTMLElement,
+  imgArray?: string[]
+) => {
+  // const { root, imgArray, pause, restart, destroy } = this;
+  const thisRoot = root || document.body;
+  const thisImgArray = imgArray || gunmachanImages;
+  thisRoot.style.position = 'relative';
+  thisRoot.style.overflow = 'hidden';
 
-    const merryGoRoundObject = new MerryGoRound({
-      root,
-      imgArray,
-      duration,
-      marginRatio,
-      displaySize,
-    }).init();
-    const { imagesClassName } = merryGoRoundObject;
-    return {
-      ...merryGoRoundObject,
-      pause: () => pause(imagesClassName),
-      restart: () => restart(imagesClassName),
-      destroy: (delay?: number) => destroy(imagesClassName, delay),
-    };
-  }
+  const merryGoRoundObject = new MerryGoRound({
+    root: thisRoot,
+    imgArray: thisImgArray,
+    duration,
+    marginRatio,
+    displaySize,
+  }).init();
+  const { imagesClassName } = merryGoRoundObject;
+  return {
+    ...merryGoRoundObject,
+    pause: () => pause(imagesClassName),
+    restart: () => restart(imagesClassName),
+    destroy: (delay?: number) => destroy(imagesClassName, delay),
+  };
+};
 
-  /**
-   * スカイダイビング
-   * @returns
-   */
-  skyDiving() {
-    const { root, imgArray } = this;
-    root.style.position = 'relative';
-    root.style.overflow = 'hidden';
+/**
+ * スカイダイビング
+ * @returns
+ */
+export const skyDiving = (root?: HTMLElement, imgArray?: string[]) => {
+  const thisRoot = root || document.body;
+  const thisImgArray = imgArray || gunmachanImages;
+  thisRoot.style.position = 'relative';
+  thisRoot.style.overflow = 'hidden';
 
-    return new SkyDiving({
-      root,
-      imgArray,
-    }).init();
-  }
+  return new SkyDiving({
+    root: thisRoot,
+    imgArray: thisImgArray,
+  }).init();
+};
 
-  /**
-   * おともぐんまちゃん
-   * @param {number} displayCount おともにするぐんまちゃんの数
-   * @param {string} displaySize  おともにするぐんまちゃんのサイズ ( px or %: 要素の横幅に対する相対値 )
-   * @param {number} interval おともぐんまちゃん間のマージン ( 1つのゴンドラの大きさに対する相対値 )
-   * @returns
-   */
-  accompany(displayCount: number, displaySize: string, interval: number) {
-    const { root, imgArray } = this;
-    root.style.position = 'relative';
-    root.style.overflow = 'hidden';
+/**
+ * おともぐんまちゃん
+ * @param {number} displayCount おともにするぐんまちゃんの数
+ * @param {string} displaySize  おともにするぐんまちゃんのサイズ ( px or %: 要素の横幅に対する相対値 )
+ * @param {number} interval おともぐんまちゃん間のマージン ( 1つのゴンドラの大きさに対する相対値 )
+ * @returns
+ */
+export const accompany = (
+  displayCount: number,
+  displaySize: string,
+  interval: number,
+  root?: HTMLElement,
+  imgArray?: string[]
+) => {
+  const thisRoot = root || document.body;
+  const thisImgArray = imgArray || gunmachanImages;
+  thisRoot.style.position = 'relative';
+  thisRoot.style.overflow = 'hidden';
 
-    return new Accompany({
-      root,
-      imgArray,
-      interval,
-      displaySize,
-      displayCount,
-    }).init();
-  }
-}
-
-export default GchanLand;
+  return new Accompany({
+    root: thisRoot,
+    imgArray: thisImgArray,
+    interval,
+    displaySize,
+    displayCount,
+  }).init();
+};

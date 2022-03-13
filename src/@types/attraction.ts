@@ -19,6 +19,10 @@ export interface SkyDivingInitProps {
   imgArray: string[];
 }
 
-export interface OptionalStyle {
-  [keyof: CSSStyleDeclaration]: string;
+export type OptionalStyle = {
+  [key: string]: string;
+};
+
+export interface CssProperty extends CSSStyleDeclaration {
+  [key: string]: any;
 }

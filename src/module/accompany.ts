@@ -1,6 +1,6 @@
 import { increaseImageAry, createImgElm } from './utils/images';
 import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
-import { AccompanyInitProps } from '../@types/atraction';
+import { AccompanyInitProps } from '../@types/attraction';
 
 interface Accompany {
   root: HTMLElement;
@@ -117,12 +117,12 @@ const init = ({
       });
     }
   };
-  const handleMouseSeenter = () => {
+  const handleMouseenter = () => {
     imgs.forEach((img) => {
       img.style.opacity = '1';
     });
   };
-  const handleMouseLeave = (e: MouseEvent) => {
+  const handleMouseLeave = () => {
     const { x, y } = accompanyAry[accompanyAry.length - 1];
     imgs.forEach((img) => {
       img.style.opacity = '0';
@@ -133,7 +133,7 @@ const init = ({
   };
 
   root.addEventListener('mousemove', handleMouseMove);
-  root.addEventListener('mouseenter', handleMouseSeenter);
+  root.addEventListener('mouseenter', handleMouseenter);
   root.addEventListener('mouseleave', handleMouseLeave);
 
   return {
