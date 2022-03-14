@@ -266,19 +266,21 @@ gchan.accompany(duration, displaySize, marginRatio);
 
 ### Methods
 
-| method   | Type                             | Description                                                                                                             |
-| -------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `resize` | `(displaySize?: string) => void` | ぐんまちゃんの大きさをリサイズします。<br>引数ががない場合、`accompany`を呼び出した際の指定にしたがってリサイズします。 |
+| method    | Type                             | Description                                                                                                             |
+| --------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `resize`  | `(displaySize?: string) => void` | ぐんまちゃんの大きさをリサイズします。<br>引数ががない場合、`accompany`を呼び出した際の指定にしたがってリサイズします。 |
+| `destroy` | `(delay?: number) => void`       | お連れ様を解散させます。<br>`delay`で秒数を指定すると、その秒数間隔で順番にゴンドラが破棄されます。                     |
 
 #### Example
 
 ```js
 const accompanyObj = gchan.accompany(10, '10%', 0.5);
 
-window.addEventListener('resize', () => {
-  // リサイズ
-  accompanyObj.resize();
-});
+// リサイズ
+accompanyObj.resize();
+
+// お連れ様解散
+accompanyObj.destroy();
 ```
 
 ### Others

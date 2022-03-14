@@ -242,7 +242,6 @@ class FerrisWheel {
   }
 
   resize() {
-    // TODO: 引数で新しい値を受け取るように修正する！
     const { root, imagesClassName, displaySize, marginRatio } = this;
     if (!imagesClassName) return;
 
