@@ -15,7 +15,8 @@
     background-color: #fffaf0;
     box-shadow: 0 0 3px inset #000;
     &[data-ferriswheel],
-    &[data-merryGoRound] {
+    &[data-merryGoRound],
+    &[data-coffeeCup] {
       display: flex;
       align-items: center;
       justify-content: center;

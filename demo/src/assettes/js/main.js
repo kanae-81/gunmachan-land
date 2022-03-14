@@ -1,5 +1,11 @@
 /* eslint-disable no-undef */
-import { skyDiving, accompany, ferrisWheel, merryGoRound } from '/dist/index';
+import {
+  skyDiving,
+  accompany,
+  ferrisWheel,
+  merryGoRound,
+  coffeeCup,
+} from '/dist/index';
 
 const createButtons = (attraction) => ({
   create: document.querySelector(`[data-${attraction}="create"]`),
@@ -94,6 +100,29 @@ const execAccompany = () => {
   });
 };
 
+const execCoffeeCup = () => {
+  const attraction = 'coffeecup';
+  const root = document.querySelector(`[data-${attraction}]`);
+  const coffeeCupObj = coffeeCup({
+    root,
+    displayCount: 5,
+    displaySize: '50px',
+    defaultSpeed: 1,
+    fastRatio: 2,
+  });
+
+  document
+    .querySelector('[data-coffeecup="create"]')
+    .addEventListener('click', () => {
+      coffeeCupObj.add();
+    });
+  document
+    .querySelector('[data-coffeecup="destroy"]')
+    .addEventListener('click', () => {
+      coffeeCupObj.destroy();
+    });
+};
+
 const execSkyDiving = () => {
   const attraction = 'skyDiving';
   const root = document.querySelector(`[data-${attraction}]`);
@@ -133,4 +162,5 @@ window.addEventListener('load', () => {
   });
   execAccompany();
   execSkyDiving();
+  execCoffeeCup();
 });

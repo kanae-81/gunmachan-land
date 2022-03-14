@@ -21,6 +21,15 @@ export interface SkyDivingOptions {
   imgArray?: string[];
 }
 
+export interface CoffeeCupOptions {
+  displayCount: number;
+  displaySize: string;
+  defaultSpeed: number;
+  fastRatio: number;
+  root?: HTMLElement;
+  imgArray?: string[];
+}
+
 export interface AccompanyOptions {
   displayCount: number;
   displaySize: string;

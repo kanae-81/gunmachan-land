@@ -12,6 +12,7 @@ npm install gunmachan-land
 
 - [`ferrisWheel` : 観覧車](#ferriswheel--観覧車)
 - [`merryGoRound` : メリーゴーランド](#merrygoround--メリーゴーランド)
+- [`coffeeCup` : コーヒーカップ](#coffeecup--コーヒーカップ)
 - [`skyDiving` : スカイダイビング](#skydiving--スカイダイビング)
 - [`Accompany` : おともぐんまちゃん](#accompany--おともぐんまちゃん)
 
@@ -177,13 +178,74 @@ setTimeout(() => {
 }, 10)
 ```
 
-## コーヒーカップ
+## `coffeeCup` : コーヒーカップ
 
-- 画面内にいるぐんまちゃんをクリックすると回転する
+### Description
 
-## ジェットコースター
+画面内にいるぐんまちゃんをボバーすると回転が速くなる
 
-- ぐんまちゃんが縦横無尽に画面内をうろうろする
+### Settings
+
+| options        | Type           | Default          | Description                                                                         |
+| -------------- | -------------- | ---------------- | ----------------------------------------------------------------------------------- |
+| `displayCount` | `number`       |                  | 表示するコーヒーカップの数を指定してください。                                      |
+| `displaySize`  | `string`       |                  | コーヒーカップのサイズ<br>`px` or `%` で指定してください。(root 要素の横幅が`100%`) |
+| `defaultSpeed` | `number`       |                  | コーヒーカップが 1 回転する時間。<br>秒数で指定してください                         |
+| `fastRatio`    | `number`       |                  | ボバー時のスピード。<br>`defaultSpeed`を`1`としたときの相対値を指定してください。   |
+| `root`         | `HTMLElement?` | `document.body`  | アトラクションの対象となる要素を指定します。                                        |
+| `imgArray`     | `string[]?`    | ぐんまちゃん画像 | アトラクションに乗車する画像パスを配列で指定します。                                |
+
+### Methods
+
+| method    | Type         | Description                  |
+| --------- | ------------ | ---------------------------- |
+| `add`     | `() => void` | コーヒーカップを追加します。 |
+| `destroy` | `() => void` | コーヒーカップを破棄します。 |
+
+#### Example
+
+```js
+import { coffeeCup } from 'gunmachan-land';
+
+const coffeeCupObj = coffeeCup({
+  displayCount: 5,
+  displaySize: '50px',
+  defaultSpeed: 1,
+  fastRatio: 2,
+});
+
+// 追加
+coffeeCupObj.add();
+
+// 破棄
+coffeeCupObj.destroy();
+```
+
+### Others
+
+| Property          | Type     | Description            |
+| ----------------- | -------- | ---------------------- |
+| `imagesClassName` | `string` | ゴンドラ要素のクラス名 |
+
+#### Example
+
+```js
+import { coffeeCup } from 'gunmachan-land';
+
+const coffeeCupObj = coffeeCup({
+  displayCount: 5,
+  displaySize: '50px',
+  defaultSpeed: 1,
+  fastRatio: 2,
+});
+const { imagesClassName, animationDelay } = coffeeCupObj;
+
+// コーヒーカップの形を変更する
+const images = Array.from(document.querySelectorAll(`.${imagesClassName}`)
+images.forEach((img) => {
+  img.style.borderRadius = 'none';
+})
+```
 
 ## `skyDiving` : スカイダイビング
 
@@ -241,10 +303,6 @@ images.forEach((img) => {
 })
 ```
 
-## お化け屋敷
-
-- 突然画面内にぐんまちゃんが現れる。そのうち消える
-
 ## `Accompany` : おともぐんまちゃん
 
 ### Description
@@ -301,3 +359,10 @@ images.forEach((img) => {
   img.style.borderRadius = 'none';
 })
 ```
+
+## 工事中
+
+- ジェットコースター
+  - ぐんまちゃんが縦横無尽に画面内をうろうろする
+- お化け屋敷
+  - 突然画面内にぐんまちゃんが現れる。そのうち消える

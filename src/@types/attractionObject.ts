@@ -19,6 +19,14 @@ export interface SkyDivingObject {
   imgArray?: string[];
 }
 
+export interface CoffeeObject {
+  displaySize: string;
+  defaultSpeed: number;
+  fastRatio: number;
+  root?: HTMLElement;
+  imgArray?: string[];
+}
+
 export interface AccompanyObject {
   displayCount: number;
   displaySize: string;

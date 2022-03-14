@@ -20,6 +20,15 @@ export interface SkyDivingInitProps {
   speed: number;
 }
 
+export interface CoffeeCupInitProps {
+  root: HTMLElement;
+  imgArray: string[];
+  displayCount: number;
+  displaySize: string;
+  defaultSpeed: number;
+  fastRatio: number;
+}
+
 export type OptionalStyle = {
   [key: string]: string;
 };
