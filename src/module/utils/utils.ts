@@ -25,3 +25,16 @@ export const convertStringSizeToNumbers = (
     console.error(error);
   }
 };
+
+/**
+ * ランダムな整数を生成
+ * @param {number} range
+ * @returns {number}
+ */
+export const getRandomNum = (range: number) => {
+  const min = 0;
+  const max = range;
+  const pos = Math.floor(Math.random() * (max + 1 - min)) + min;
+
+  return pos;
+};

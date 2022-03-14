@@ -2,12 +2,14 @@ import FerrisWheel from './module/ferrisWheel';
 import MerryGoRound from './module/merryGoRound';
 import Accompany from './module/accompany';
 import SkyDiving from './module/skyDiving';
+import CoffeeCup from './module/coffeeCup';
 import { gunmachanImages } from './module/utils/images';
 import {
   FerrisWheelOptions,
   MerryGoRoundOptions,
   SkyDivingOptions,
   AccompanyOptions,
+  CoffeeCupOptions,
 } from './@types/attractionOptions';
 
 /**
@@ -86,6 +88,34 @@ export const skyDiving = ({
     imgArray: thisImgArray,
     displaySize,
     speed,
+  }).init();
+};
+
+/**
+ * コーヒーカップ
+ * @param {CoffeeCupOptions} コーヒーカップのオプション
+ * @returns {CoffeeCup}
+ */
+export const coffeeCup = ({
+  root,
+  imgArray,
+  displayCount,
+  displaySize,
+  defaultSpeed,
+  fastRatio,
+}: CoffeeCupOptions): CoffeeCup => {
+  const thisRoot = root || document.body;
+  const thisImgArray = imgArray || gunmachanImages;
+  thisRoot.style.position = 'relative';
+  thisRoot.style.overflow = 'hidden';
+
+  return new CoffeeCup({
+    root: thisRoot,
+    imgArray: thisImgArray,
+    displayCount,
+    displaySize,
+    defaultSpeed,
+    fastRatio,
   }).init();
 };
 
