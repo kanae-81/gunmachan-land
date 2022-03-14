@@ -2,25 +2,11 @@
 
 ぐんまちゃんの遊園地を創造できます。
 
-## DEMO
-
 ## Get start
 
 ```shell
 npm install gunmachan-land
 ```
-
-```js
-import GchanLand from 'gunmachan-land';
-const gchan = new GchanLand(...options);
-```
-
-### options
-
-| Option     | Type          | Default          | Description                                          |
-| ---------- | ------------- | ---------------- | ---------------------------------------------------- |
-| `root`     | `HTMLElement` | body 要素        | アトラクションの対象となる要素を指定します。         |
-| `imgArray` | `string[]`    | ぐんまちゃん画像 | アトラクションに乗車する画像パスを配列で指定します。 |
 
 ### Attractions
 
@@ -28,6 +14,8 @@ const gchan = new GchanLand(...options);
 - [`merryGoRound` : メリーゴーランド](#merrygoround--メリーゴーランド)
 - [`skyDiving` : スカイダイビング](#skydiving--スカイダイビング)
 - [`Accompany` : おともぐんまちゃん](#accompany--おともぐんまちゃん)
+
+### DEMO
 
 ## `ferrisWheel` : 観覧車
 
@@ -37,16 +25,13 @@ const gchan = new GchanLand(...options);
 
 ### Settings
 
-```js
-const gchan = new GchanLand(root);
-gchan.ferrisWheel(duration, displaySize, marginRatio);
-```
-
-| param         | Type     | Description                                                                   |
-| ------------- | -------- | ----------------------------------------------------------------------------- |
-| `duration`    | `number` | ゴンドラが 1 周する時間<br>秒数で指定してください。                           |
-| `displaySize` | `string` | ゴンドラのサイズ<br>`px` or `%` で指定してください。(root 要素の横幅が`100%`) |
-| `marginRatio` | `number` | ゴンドラの間隔<br> ゴンドラの大きさを`1`とした相対値で指定してください。      |
+| options       | Type           | Default          | Description                                                                   |
+| ------------- | -------------- | ---------------- | ----------------------------------------------------------------------------- |
+| `duration`    | `number`       |                  | ゴンドラが 1 周する時間<br>秒数で指定してください。                           |
+| `displaySize` | `string`       |                  | ゴンドラのサイズ<br>`px` or `%` で指定してください。(root 要素の横幅が`100%`) |
+| `marginRatio` | `number`       |                  | ゴンドラの間隔<br> ゴンドラの大きさを`1`とした相対値で指定してください。      |
+| `root`        | `HTMLElement?` | `document.body`  | アトラクションの対象となる要素を指定します。                                  |
+| `imgArray`    | `string[]?`    | ぐんまちゃん画像 | アトラクションに乗車する画像パスを配列で指定します。                          |
 
 ### Methods
 
@@ -60,27 +45,25 @@ gchan.ferrisWheel(duration, displaySize, marginRatio);
 #### Example
 
 ```js
-const ferrisWheelObj = gchan.ferrisWheel(10, '10%', 0.5);
+import { ferrisWheel } from 'gunmachan-land';
 
-element1.addEventListener('click', () => {
-  // 一時停止
-  ferrisWheelObj.pause();
+const ferrisWheelObj = ferrisWheel({
+  duration: 10,
+  displaySize: '10%',
+  marginRatio: 0.5,
 });
 
-element2.addEventListener('click', () => {
-  // 再生
-  ferrisWheelObj.restart();
-});
+// 一時停止
+ferrisWheelObj.pause();
 
-element3.addEventListener('click', () => {
-  // 破棄
-  ferrisWheelObj.destroy();
-});
+// 再生
+ferrisWheelObj.restart();
 
-window.addEventListener('resize', () => {
-  // リサイズ
-  ferrisWheelObj.resize();
-});
+// 破棄
+ferrisWheelObj.destroy();
+
+// リサイズ
+ferrisWheelObj.resize();
 ```
 
 ### Others
@@ -93,7 +76,13 @@ window.addEventListener('resize', () => {
 #### Example
 
 ```js
-const ferrisWheelObj = gchan.ferrisWheel(10, '10%', 0.5);
+import { ferrisWheel } from 'gunmachan-land';
+
+const ferrisWheelObj = ferrisWheel({
+  duration: 10,
+  displaySize: '10%',
+  marginRatio: 0.5,
+});
 const { imagesClassName, animationDelay } = ferrisWheelObj;
 
 // ゴンドラの形を変更する
@@ -102,7 +91,7 @@ images.forEach((img) => {
   img.style.borderRadius = 'none';
 })
 
-// ゴンドラが1周したタイミングで破棄
+// 10秒後に先頭から順番にゴンドラを破棄
 setTimeout(() => {
   ferrisWheelObj.destroy(animationDelay);
 }, 10)
@@ -116,16 +105,13 @@ setTimeout(() => {
 
 ### Settings
 
-```js
-const gchan = new GchanLand(root);
-gchan.merryGoRound(duration, displaySize, marginRatio);
-```
-
-| param         | Type     | Description                                                                   |
-| ------------- | -------- | ----------------------------------------------------------------------------- |
-| `duration`    | `number` | ゴンドラが 1 往復する時間<br>秒数で指定してください。                         |
-| `displaySize` | `string` | ゴンドラのサイズ<br>`px` or `%` で指定してください。(root 要素の横幅が`100%`) |
-| `marginRatio` | `number` | ゴンドラの間隔<br> ゴンドラの大きさを`1`とした相対値で指定してください。      |
+| options       | Type           | Default          | Description                                                                   |
+| ------------- | -------------- | ---------------- | ----------------------------------------------------------------------------- |
+| `duration`    | `number`       |                  | ゴンドラが 1 往復する時間<br>秒数で指定してください。                         |
+| `displaySize` | `string`       |                  | ゴンドラのサイズ<br>`px` or `%` で指定してください。(root 要素の横幅が`100%`) |
+| `marginRatio` | `number`       |                  | ゴンドラの間隔<br> ゴンドラの大きさを`1`とした相対値で指定してください。      |
+| `root`        | `HTMLElement?` | `document.body`  | アトラクションの対象となる要素を指定します。                                  |
+| `imgArray`    | `string[]?`    | ぐんまちゃん画像 | アトラクションに乗車する画像パスを配列で指定します。                          |
 
 ### Methods
 
@@ -139,27 +125,25 @@ gchan.merryGoRound(duration, displaySize, marginRatio);
 #### Example
 
 ```js
-const merryGoRoundObj = gchan.merryGoRound(10, '10%', 0.5);
+import { merryGoRound } from 'gunmachan-land';
 
-element1.addEventListener('click', () => {
-  // 一時停止
-  merryGoRoundObj.pause();
+const merryGoRoundObj = merryGoRound({
+  duration: 10,
+  displaySize: '5%',
+  marginRatio: 0.5,
 });
 
-element2.addEventListener('click', () => {
-  // 再生
-  merryGoRoundObj.restart();
-});
+// 一時停止
+merryGoRoundObj.pause();
 
-element3.addEventListener('click', () => {
-  // 破棄
-  merryGoRoundObj.destroy();
-});
+// 再生
+merryGoRoundObj.restart();
 
-window.addEventListener('resize', () => {
-  // リサイズ
-  merryGoRoundObj.resize();
-});
+// 破棄
+merryGoRoundObj.destroy();
+
+// リサイズ
+merryGoRoundObj.resize();
 ```
 
 ### Others
@@ -172,7 +156,13 @@ window.addEventListener('resize', () => {
 #### Example
 
 ```js
-const merryGoRoundObj = gchan.merryGoRound(10, '10%', 0.5);
+import { merryGoRound } from 'gunmachan-land';
+
+const merryGoRoundObj = merryGoRound({
+  duration: 10,
+  displaySize: '5%',
+  marginRatio: 0.5,
+});
 const { imagesClassName, animationDelay } = merryGoRoundObj;
 
 // ゴンドラの形を変更する
@@ -181,7 +171,7 @@ images.forEach((img) => {
   img.style.borderRadius = 'none';
 })
 
-// ゴンドラが1往復したタイミングで破棄
+// 10秒後に先頭から順番にゴンドラを破棄
 setTimeout(() => {
   merryGoRoundObj.destroy(animationDelay);
 }, 10)
@@ -203,15 +193,32 @@ setTimeout(() => {
 
 ### Settings
 
-```js
-const gchan = new GchanLand(root);
-const skyDivingObj = gchan.skyDiving(displaySize, speed);
-```
+| options       | Type           | Default          | Description                                                                       |
+| ------------- | -------------- | ---------------- | --------------------------------------------------------------------------------- |
+| `displaySize` | `string`       |                  | ぐんまちゃんのサイズ<br>`px` or `%` で指定してください。(root 要素の横幅が`100%`) |
+| `speed`       | `number`       |                  | ぐんまちゃんが下まで落ちる時間<br>秒数で指定してください。                        |
+| `root`        | `HTMLElement?` | `document.body`  | アトラクションの対象となる要素を指定します。                                      |
+| `imgArray`    | `string[]?`    | ぐんまちゃん画像 | アトラクションに乗車する画像パスを配列で指定します。                              |
 
-| param         | Type     | Description                                                                       |
-| ------------- | -------- | --------------------------------------------------------------------------------- |
-| `displaySize` | `string` | ぐんまちゃんのサイズ<br>`px` or `%` で指定してください。(root 要素の横幅が`100%`) |
-| `speed`       | `number` | ぐんまちゃんが下まで落ちる時間<br>秒数で指定してください。                        |
+### Methods
+
+| method | Type         | Description                |
+| ------ | ------------ | -------------------------- |
+| `add`  | `() => void` | 空からぐんまちゃんを降らす |
+
+#### Example
+
+```js
+import { skyDiving } from 'gunmachan-land';
+
+const skyDivingObj = skyDiving({
+  displaySize: '5%',
+  speed: 0.5,
+});
+
+// ぐんまちゃんを降らす
+skyDivingObj.add();
+```
 
 ### Others
 
@@ -222,15 +229,16 @@ const skyDivingObj = gchan.skyDiving(displaySize, speed);
 #### Example
 
 ```js
-const skyDivingObj = gchan.skyDiving(10, '10%', 0.5);
+import { skyDiving } from 'gunmachan-land';
+
+const skyDivingObj = skyDiving(10, '10%', 0.5);
 const { imagesClassName } = skyDivingObj;
 
-// ゴンドラの形を変更する
+// ぐんまちゃんの形を変更する
 const images = Array.from(document.querySelectorAll(`.${imagesClassName}`)
 images.forEach((img) => {
   img.style.clipPath = 'xxx';
 })
-
 ```
 
 ## お化け屋敷
@@ -275,10 +283,9 @@ window.addEventListener('resize', () => {
 
 ### Others
 
-| Property          | Type     | Description                                    |
-| ----------------- | -------- | ---------------------------------------------- |
-| `imagesClassName` | `string` | ぐんまちゃん要素のクラス名                     |
-| `animationDelay`  | `number` | 前のぐんまちゃんとのアニメーション間隔（秒数） |
+| Property          | Type     | Description                |
+| ----------------- | -------- | -------------------------- |
+| `imagesClassName` | `string` | ぐんまちゃん要素のクラス名 |
 
 #### Example
 

@@ -1,6 +1,6 @@
 import { increaseImageAry, createImgElm } from './utils/images';
 import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
-import { AccompanyInitProps } from '../@types/attraction';
+import { AccompanyInitProps } from '../@types/attractionFactory';
 
 interface Accompany {
   root: HTMLElement;
@@ -9,8 +9,6 @@ interface Accompany {
   displaySize: string;
   displayCount: number;
   imagesClassName?: string;
-  // TODO: これあるんだっけ
-  animationDelay?: number;
   init(): Accompany;
   resize(): void;
   // TODO: destroyはあってもいいかも

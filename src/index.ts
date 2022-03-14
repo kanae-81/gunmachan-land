@@ -3,61 +3,25 @@ import MerryGoRound from './module/merryGoRound';
 import Accompany from './module/accompany';
 import SkyDiving from './module/skyDiving';
 import { gunmachanImages } from './module/utils/images';
-
-/**
- * アニメーション一時停止
- * @returns {void}
- */
-const pause = (imagesClassName: string) => {
-  const imageElms = document.querySelectorAll<HTMLImageElement>(
-    `.${imagesClassName}`
-  );
-  imageElms.forEach((image) => {
-    image.style.animationPlayState = 'paused';
-  });
-};
-/**
- * アニメーション再生
- * @return {void}
- */
-const restart = (imagesClassName: string) => {
-  const imageElms = document.querySelectorAll<HTMLImageElement>(
-    `.${imagesClassName}`
-  );
-  imageElms.forEach((image) => {
-    image.style.animationPlayState = 'running';
-  });
-};
-
-/**
- * アニメーション破棄
- * @param {number} delay 画像削除の間隔(秒数指定)
- * @returns {void}
- */
-const destroy = (imagesClassName: string, delay?: number) => {
-  const images = document.querySelectorAll(`.${imagesClassName}`);
-  const delayMs = delay ? delay * 1000 : 0;
-  images.forEach((image, index) => {
-    setTimeout(() => {
-      image.remove();
-    }, delayMs * index);
-  });
-};
+import {
+  FerrisWheelOptions,
+  MerryGoRoundOptions,
+  SkyDivingOptions,
+  AccompanyOptions,
+} from './@types/attractionOptions';
 
 /**
  * 観覧車
- * @param {number} duration 1周する時間 ( 秒数 )
- * @param {string} displaySize  ゴンドラのサイズ ( px or %: 要素の横幅に対する相対値 )
- * @param {number} marginRatio ゴンドラ間のマージン ( 1つのゴンドラの大きさに対する相対値 )
- * @returns
+ * @param {FerrisWheelOptions} 観覧車のオプション
+ * @returns {FerrisWheel}
  */
-export const ferrisWheel = (
-  duration: number,
-  displaySize: string,
-  marginRatio: number,
-  root?: HTMLElement,
-  imgArray?: string[]
-) => {
+export const ferrisWheel = ({
+  duration,
+  displaySize,
+  marginRatio,
+  root,
+  imgArray,
+}: FerrisWheelOptions): FerrisWheel => {
   const thisRoot = root || document.body;
   const thisImgArray = imgArray || gunmachanImages;
   thisRoot.style.position = 'relative';
@@ -70,31 +34,21 @@ export const ferrisWheel = (
     displaySize,
   }).init();
 
-  const { imagesClassName } = ferrisWheelObject;
-
-  return {
-    ...ferrisWheelObject,
-    pause: () => pause(imagesClassName),
-    restart: () => restart(imagesClassName),
-    destroy: (delay?: number) => destroy(imagesClassName, delay),
-  };
+  return ferrisWheelObject;
 };
 
 /**
  * メリーゴーランド
- * @param {number} duration 1周する時間 ( 秒数 )
- * @param {string} displaySize  ゴンドラのサイズ ( px or %: 要素の横幅に対する相対値 )
- * @param {number} marginRatio ゴンドラ間のマージン ( 1つのゴンドラの大きさに対する相対値 )
- * @returns
+ * @param {MerryGoRoundOptions} メリーゴーランドのオプション
+ * @returns {MerryGoRound}
  */
-export const merryGoRound = (
-  duration: number,
-  displaySize: string,
-  marginRatio: number,
-  root?: HTMLElement,
-  imgArray?: string[]
-) => {
-  // const { root, imgArray, pause, restart, destroy } = this;
+export const merryGoRound = ({
+  duration,
+  displaySize,
+  marginRatio,
+  root,
+  imgArray,
+}: MerryGoRoundOptions): MerryGoRound => {
   const thisRoot = root || document.body;
   const thisImgArray = imgArray || gunmachanImages;
   thisRoot.style.position = 'relative';
@@ -107,20 +61,21 @@ export const merryGoRound = (
     marginRatio,
     displaySize,
   }).init();
-  const { imagesClassName } = merryGoRoundObject;
-  return {
-    ...merryGoRoundObject,
-    pause: () => pause(imagesClassName),
-    restart: () => restart(imagesClassName),
-    destroy: (delay?: number) => destroy(imagesClassName, delay),
-  };
+
+  return merryGoRoundObject;
 };
 
 /**
  * スカイダイビング
- * @returns
+ * @param {SkyDivingOptions} スカイダイビングのオプション
+ * @returns {SkyDiving}
  */
-export const skyDiving = (root?: HTMLElement, imgArray?: string[]) => {
+export const skyDiving = ({
+  root,
+  imgArray,
+  displaySize,
+  speed,
+}: SkyDivingOptions): SkyDiving => {
   const thisRoot = root || document.body;
   const thisImgArray = imgArray || gunmachanImages;
   thisRoot.style.position = 'relative';
@@ -129,23 +84,23 @@ export const skyDiving = (root?: HTMLElement, imgArray?: string[]) => {
   return new SkyDiving({
     root: thisRoot,
     imgArray: thisImgArray,
+    displaySize,
+    speed,
   }).init();
 };
 
 /**
  * おともぐんまちゃん
- * @param {number} displayCount おともにするぐんまちゃんの数
- * @param {string} displaySize  おともにするぐんまちゃんのサイズ ( px or %: 要素の横幅に対する相対値 )
- * @param {number} interval おともぐんまちゃん間のマージン ( 1つのゴンドラの大きさに対する相対値 )
- * @returns
+ * @param {AccompanyOptions} おともぐんまちゃんのオプション
+ * @returns {Accompany}
  */
-export const accompany = (
-  displayCount: number,
-  displaySize: string,
-  interval: number,
-  root?: HTMLElement,
-  imgArray?: string[]
-) => {
+export const accompany = ({
+  displayCount,
+  displaySize,
+  interval,
+  root,
+  imgArray,
+}: AccompanyOptions): Accompany => {
   const thisRoot = root || document.body;
   const thisImgArray = imgArray || gunmachanImages;
   thisRoot.style.position = 'relative';

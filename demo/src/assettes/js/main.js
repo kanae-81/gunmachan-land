@@ -45,7 +45,7 @@ const operateAttraction = (buttons, type) => {
   }
 };
 
-const execAttraction = (attraction, fn, ...option) => {
+const execAttraction = (attraction, fn, option) => {
   const root = document.querySelector(`[data-${attraction}]`);
   let attractionObj = null;
 
@@ -53,7 +53,7 @@ const execAttraction = (attraction, fn, ...option) => {
   operateAttraction(buttons, 'init');
 
   buttons.create.addEventListener('click', () => {
-    attractionObj = fn(...option, root);
+    attractionObj = fn({ ...option, root });
     operateAttraction(buttons, 'create');
   });
   buttons.destroy.addEventListener('click', () => {
@@ -82,7 +82,13 @@ const execAttraction = (attraction, fn, ...option) => {
 const execAccompany = () => {
   const attraction = 'accompany';
   const root = document.querySelector(`[data-${attraction}]`);
-  const accompanyObj = accompany(20, '10%', 0.1, root);
+  const accompanyObj = accompany({
+    displayCount: 20,
+    displaySize: '10%',
+    interval: 0.1,
+    root,
+  });
+
   window.addEventListener('resize', () => {
     accompanyObj.resize();
   });
@@ -91,12 +97,12 @@ const execAccompany = () => {
 const execSkyDiving = () => {
   const attraction = 'skyDiving';
   const root = document.querySelector(`[data-${attraction}]`);
-  const skyDivingObj = skyDiving(root);
+  const skyDivingObj = skyDiving({ root, displaySize: '5%', speed: 2 });
 
   document
     .querySelector('[data-skyDiving="create"]')
     .addEventListener('click', () => {
-      skyDivingObj.create('5%', 2);
+      skyDivingObj.add();
     });
 };
 
@@ -105,17 +111,25 @@ window.addEventListener('load', () => {
     {
       name: 'ferrisWheel',
       fn: ferrisWheel,
-      option: [10, '10%', 0.6],
+      option: {
+        duration: 10,
+        displaySize: '10%',
+        marginRatio: 0.6,
+      },
     },
     {
       name: 'merryGoRound',
       fn: merryGoRound,
-      option: [10, '5%', 0.5],
+      option: {
+        duration: 10,
+        displaySize: '5%',
+        marginRatio: 0.5,
+      },
     },
   ];
   attractionList.forEach((attraction) => {
     const { name, fn, option } = attraction;
-    execAttraction(name, fn, ...option);
+    execAttraction(name, fn, option);
   });
   execAccompany();
   execSkyDiving();

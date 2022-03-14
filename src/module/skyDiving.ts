@@ -3,15 +3,17 @@ import {
   SkyDivingInitProps,
   OptionalStyle,
   CssProperty,
-} from '../@types/attraction';
+} from '../@types/attractionFactory';
 import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
 
 interface SkyDiving {
   root: HTMLElement;
   imgArray: string[];
+  displaySize: string;
+  speed: number;
   imagesClassName: string;
   init(): SkyDiving;
-  create(displaySize: string, speed: number): void;
+  add(displaySize: string, speed: number): void;
 }
 
 interface SkyDivingCreateProps {
@@ -139,34 +141,27 @@ class SkyDiving {
   /**
    * @constructor
    */
-  constructor({ root, imgArray }: SkyDivingInitProps) {
+  constructor({ root, imgArray, displaySize, speed }: SkyDivingInitProps) {
     this.root = root;
     this.imgArray = imgArray;
     this.imagesClassName = '';
+    this.displaySize = displaySize;
+    this.speed = speed;
   }
   /**
    * スカイダイビングの準備
    * @returns {SkyDiving}
    */
   init() {
-    const { create } = this;
     const imagesClassName = `Accompany__img-${Date.now()}`;
     addBaseStyle(imagesClassName);
 
-    this.create = create;
     this.imagesClassName = imagesClassName;
     return this;
   }
 
-  /**
-   *
-   * @param {string} displaySize ダイビングするぐんまちゃん のサイズ ( px or %: 要素の横幅に対する相対値 )
-   * @param {number} speed 落ちるスピード (秒)
-   * @returns
-   */
-  // TODO: ここの引数はinitに移す
-  create(displaySize: string, speed: number) {
-    const { root, imgArray, imagesClassName } = this;
+  add() {
+    const { root, imgArray, imagesClassName, displaySize, speed } = this;
     return create({ root, imgArray, displaySize, speed, imagesClassName });
   }
 }
