@@ -1,6 +1,7 @@
 import { increaseImageAry, createImgElm } from './utils/images';
 import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
-import { AccompanyInitProps } from '../@types/attraction';
+import { AccompanyInitProps } from '../@types/attractionFactory';
+import { destroy } from './utils/common';
 
 interface Accompany {
   root: HTMLElement;
@@ -9,11 +10,9 @@ interface Accompany {
   displaySize: string;
   displayCount: number;
   imagesClassName?: string;
-  // TODO: これあるんだっけ
-  animationDelay?: number;
   init(): Accompany;
   resize(): void;
-  // TODO: destroyはあってもいいかも
+  destroy(): void;
 }
 
 /**
@@ -198,6 +197,11 @@ class Accompany {
         img.style.height = `${size}px`;
       });
     }
+  }
+  destroy(delay?: number) {
+    const { imagesClassName } = this;
+    if (!imagesClassName) return;
+    return destroy(imagesClassName, delay);
   }
 }
 

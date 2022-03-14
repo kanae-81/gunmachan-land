@@ -1,6 +1,11 @@
 import { increaseImageAry, createImgElm } from './utils/images';
 import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
-import { initProps, OptionalStyle, CssProperty } from '../@types/attraction';
+import {
+  initProps,
+  OptionalStyle,
+  CssProperty,
+} from '../@types/attractionFactory';
+import { pause, restart, destroy } from '../module/utils/common';
 
 interface MerryGoRound {
   root: HTMLElement;
@@ -263,7 +268,6 @@ class MerryGoRound {
    * メリーゴーランドのリサイズ
    * @returns {void}
    */
-  // TODO: 引数で新しい値を受け取るように修正する！
   resize() {
     const { root, imagesClassName, displaySize, marginRatio } = this;
     if (!imagesClassName) return;
@@ -285,6 +289,18 @@ class MerryGoRound {
         style[key] = optionalStyle[key];
       });
     });
+  }
+  pause() {
+    const { imagesClassName } = this;
+    return pause(imagesClassName);
+  }
+  restart() {
+    const { imagesClassName } = this;
+    return restart(imagesClassName);
+  }
+  destroy(delay?: number) {
+    const { imagesClassName } = this;
+    return destroy(imagesClassName, delay);
   }
 }
 

@@ -5,7 +5,6 @@ export interface initProps {
   displaySize: string;
   marginRatio: number;
 }
-
 export interface AccompanyInitProps {
   root: HTMLElement;
   imgArray: string[];
@@ -17,6 +16,8 @@ export interface AccompanyInitProps {
 export interface SkyDivingInitProps {
   root: HTMLElement;
   imgArray: string[];
+  displaySize: string;
+  speed: number;
 }
 
 export type OptionalStyle = {

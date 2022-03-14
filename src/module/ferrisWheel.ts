@@ -1,6 +1,11 @@
 import { increaseImageAry, createImgElm } from './utils/images';
 import { addStyleRule, convertStringSizeToNumbers } from './utils/utils';
-import { CssProperty, initProps, OptionalStyle } from '../@types/attraction';
+import {
+  CssProperty,
+  initProps,
+  OptionalStyle,
+} from '../@types/attractionFactory';
+import { pause, restart, destroy } from '../module/utils/common';
 
 interface FerrisWheel {
   root: HTMLElement;
@@ -236,12 +241,7 @@ class FerrisWheel {
     return this;
   }
 
-  /**
-   * 観覧車のリサイズ
-   * @returns {void}
-   */
   resize() {
-    // TODO: 引数で新しい値を受け取るように修正する！
     const { root, imagesClassName, displaySize, marginRatio } = this;
     if (!imagesClassName) return;
 
@@ -261,6 +261,19 @@ class FerrisWheel {
         style[key] = optionalStyle[key];
       });
     });
+  }
+
+  pause() {
+    const { imagesClassName } = this;
+    return pause(imagesClassName);
+  }
+  restart() {
+    const { imagesClassName } = this;
+    return restart(imagesClassName);
+  }
+  destroy(delay?: number) {
+    const { imagesClassName } = this;
+    return destroy(imagesClassName, delay);
   }
 }
 
