@@ -58,8 +58,8 @@ const createOptionalProps = (
   displaySize: string,
   marginRatio: number
 ) => {
-  const containerWidth = root.offsetWidth;
-  const containerHeight = root.offsetHeight;
+  const containerWidth = root.scrollWidth;
+  const containerHeight = root.scrollHeight;
   const size = convertStringSizeToNumbers(displaySize, containerWidth);
   if (!size) return {};
 
@@ -89,8 +89,8 @@ const addBaseStyle = (
   size: number,
   duration: number
 ): void => {
-  const upper = 9999;
-  const lower = 8888;
+  const upper = 100001;
+  const lower = 100000;
   const top = `-${(4 * size) / 3}px`;
   const base = `-${(2 * size) / 3}px`;
   const bottom = '0';

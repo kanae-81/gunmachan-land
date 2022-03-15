@@ -39,6 +39,7 @@ const addBaseStyle = (imgClass: string) => {
       position: absolute;
       object-fit: cover;
       clip-path: polygon(50% 0%, 69% 25%, 98% 35%, 77% 56%, 82% 90%, 50% 79%, 17% 91%, 23% 56%, 2% 35%, 31% 25%);
+      z-index: 100000;
     }
   `;
 
@@ -102,8 +103,8 @@ const create = ({
   const { imgElm, size } = insertImgElms(root, imgArray, displaySize);
   if (!imgElm || !size) return;
 
-  const rootWidth = root.clientWidth;
-  const rootHeight = root.clientHeight;
+  const rootWidth = root.scrollWidth;
+  const rootHeight = root.scrollHeight;
   const startLftPos = getRandomNum(rootWidth - size);
   const endLftPos = getRandomNum(rootWidth - size);
 

@@ -105,8 +105,8 @@ const execCoffeeCup = () => {
   const root = document.querySelector(`[data-${attraction}]`);
   const coffeeCupObj = coffeeCup({
     root,
-    displayCount: 5,
-    displaySize: '50px',
+    displayCount: 0,
+    displaySize: '80px',
     defaultSpeed: 1,
     fastRatio: 2,
   });

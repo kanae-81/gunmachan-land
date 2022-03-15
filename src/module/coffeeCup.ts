@@ -47,6 +47,7 @@ const addBaseStyle = (imgClass: string) => {
       position: absolute;
       object-fit: cover;
       border-radius: 50%;
+      z-Index: 100000;
     }
   `;
 
@@ -111,8 +112,8 @@ const setPosition = (
   imgElm: HTMLImageElement,
   defaultSpeed: number
 ) => {
-  const rootWidth = root.clientWidth;
-  const rootHeight = root.clientHeight;
+  const rootWidth = root.scrollWidth;
+  const rootHeight = root.scrollHeight;
   const leftPos = getRandomNum(rootWidth - size);
   const topPos = getRandomNum(rootHeight - size);
   const baseStyle = createOptionalStyle(topPos, leftPos, defaultSpeed);

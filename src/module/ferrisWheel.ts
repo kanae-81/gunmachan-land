@@ -58,8 +58,8 @@ const createOptionalProps = (
   displaySize: string,
   marginRatio: number
 ) => {
-  const containerWidth = root.offsetWidth;
-  const containerHeight = root.offsetHeight;
+  const containerWidth = root.scrollWidth;
+  const containerHeight = root.scrollHeight;
   const size = convertStringSizeToNumbers(displaySize, containerWidth);
   if (!size) return {};
 
@@ -99,7 +99,7 @@ const addBaseStyle = (imgClass: string, duration: number): void => {
       object-fit: cover;
       border-radius: 50%;
       box-shadow: 0 0 3px #000;
-      z-index: 9999;
+      z-index: 100000;
       offset-rotate: 0deg;
       animation: move ${duration}s infinite linear;
     }
