@@ -63,7 +63,7 @@ const insertImgElms = (
       height: size,
     });
     imgElm.classList.add(imgClass);
-    imgElm.style.zIndex = `${displayCount - index}`;
+    imgElm.style.zIndex = `${100000 + displayCount - index}`;
     fragment.appendChild(imgElm);
   }
   root.appendChild(fragment);

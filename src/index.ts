@@ -54,7 +54,9 @@ export const merryGoRound = ({
   const thisRoot = root || document.body;
   const thisImgArray = imgArray || gunmachanImages;
   thisRoot.style.position = 'relative';
-  thisRoot.style.overflow = 'hidden';
+  if (root) {
+    thisRoot.style.overflow = 'hidden';
+  }
 
   const merryGoRoundObject = new MerryGoRound({
     root: thisRoot,
@@ -81,7 +83,9 @@ export const skyDiving = ({
   const thisRoot = root || document.body;
   const thisImgArray = imgArray || gunmachanImages;
   thisRoot.style.position = 'relative';
-  thisRoot.style.overflow = 'hidden';
+  if (root) {
+    thisRoot.style.overflow = 'hidden';
+  }
 
   return new SkyDiving({
     root: thisRoot,
@@ -107,7 +111,9 @@ export const coffeeCup = ({
   const thisRoot = root || document.body;
   const thisImgArray = imgArray || gunmachanImages;
   thisRoot.style.position = 'relative';
-  thisRoot.style.overflow = 'hidden';
+  if (root) {
+    thisRoot.style.overflow = 'hidden';
+  }
 
   return new CoffeeCup({
     root: thisRoot,
@@ -134,7 +140,9 @@ export const accompany = ({
   const thisRoot = root || document.body;
   const thisImgArray = imgArray || gunmachanImages;
   thisRoot.style.position = 'relative';
-  thisRoot.style.overflow = 'hidden';
+  if (root) {
+    thisRoot.style.overflow = 'hidden';
+  }
 
   return new Accompany({
     root: thisRoot,
